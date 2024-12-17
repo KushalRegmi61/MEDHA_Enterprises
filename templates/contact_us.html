@@ -1,0 +1,31 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %}
+
+{% block title %}Contact US{% endblock %}
+
+{% block content %}
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Contact Us Form Card -->
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-lg border-0" style="border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #002d25, #004d3d);">
+                    <!-- Card Header Section -->
+                    <div class="card-header text-center py-4">
+                        <h3 class="subheading pt-3" style="color: #d8b4fe;">Contact Us</h3>
+                        <p class="body-text text-white text-center mt-4">"We'd love to hear from you! Reach out to us with any questions or feedback."</p>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="card-body p-5">
+                        <div class="form-container secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
+                            <!-- Rendering the form -->
+                            {{ render_form(form, novalidate=True) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
