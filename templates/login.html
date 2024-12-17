@@ -1,0 +1,63 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Page Content -->
+
+<!-- Page Header -->
+
+<!-- Main Content -->
+<main class="mb-4">
+  <div class="container">
+    <div class="row justify-content-center">
+
+
+      <!-- Login Form -->
+      <div class="col-lg-6 col-md-8">
+        <div
+          class="card shadow"
+          style="background: linear-gradient(135deg, #002d25, #004d3d); border: none; border-radius: 10px;"
+        >
+          <div class="card-body p-5">
+            <h5 class="card-title text-center mb-4 subheading" style="color: #d8b4fe; font-size: larger;">
+              Please Sign In
+            </h5>
+            <!-- Flash Message Section -->
+              <div class="col-12 text-center">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
+                      style="border-radius: 8px;   border: none; text-align: center;">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+              </div> 
+            <div class="form-container secheading pt-3"  style="color: #eee; font-weight: bold; font-size: 1rem;">
+              {{ render_form(form, novalidate=True) }}
+            </div>
+
+            <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+            <!-- Method for Register -->
+            <div class="text-center">
+              <p class="mb-2 body-text text-center" style="color: white;">Don't have an account?</p>
+              <a
+                href="{{url_for('register')}}"
+                class="btn btn-outline-primary"
+                style=" border-color: #d8b4fe;"
+              >
+                Register Here
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
