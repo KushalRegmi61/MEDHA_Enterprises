@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <h3 class="subheading py-3 " style="border-left: 4px solid   rgba(0, 45, 33, 0.9); padding-left: 2rem;">Shopping Cart</h3>
+    <hr>
+    <!-- Flash Message Section -->
+    <div class="col-12 text-center">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
+            style="border-radius: 8px;   border: none; text-align: center;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+    {% if cart_items|length == 0 %}
+    <!-- Empty Cart Section -->
+    <div class="text-center py-5">
+        <p class="text-muted fs-5">Your cart is empty. Add some items!</p>
+        <a href="{{ url_for('products_category') }}" class="btn btn-outline-primary btn-lg">Browse Products</a>
+    </div>
+    {% else %}
+
+    <!-- Cart Items and Order Summary -->
+    <div class="row">
+        <!-- Cart Items Section -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm mb-4" 
+                style="background-color: #eee; 
+                       border-radius: 12px; 
+                       border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body">
+                    {% for item in cart_items %}
+                    <div class="row g-0 align-items-center border-bottom pb-3 mb-3">
+                        <div class="col-3 text-center">
+                            <img src="{{ url_for('static', filename=item.product.image_url) }}" 
+                                 alt="{{ item.product.name }}" 
+                                 class="img-fluid rounded" 
+                                 style="max-height: 100px; object-fit: cover;">
+                        </div>
+                        <div class="col-7 px-3">
+                            <a href="{{ url_for('product_details', id=item.product.id) }}" 
+                               class="text-decoration-none">
+                                <h5 class="text-truncate mb-1 card-title" 
+                                    style="color: rgba(0, 45, 33, 0.9); 
+                                           text-decoration: underline; 
+                                           cursor: pointer;">
+                                    {{ item.product.name }}
+                                </h5>
+                            </a>
+                            <p class="text-muted mb-1">
+                                <strong>Price:</strong> Nrs. {{ item.product.price }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Total:</strong> Nrs. {{ item.product.price * item.quantity }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Qty:</strong>
+                                <form action="{{ url_for('update_cart_item', id=item.id) }}" method="post" class="d-inline">
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control d-inline-block" style="width: 70px;" required>
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Update item" style="font-size: 0.7rem;">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </form>
+                            </p>
+                        </div>
+                        <div class="col-2 text-center mt-3">
+                            <!-- Remove Button -->
+                            <button class="btn btn-danger btn-sm" 
+                                    title="Remove from cart" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#removeItemModal{{ item.id }}" 
+                                    aria-label="Remove item">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <!-- Confirmation Modal for Remove Item -->
+                        <div class="modal fade" 
+                             id="removeItemModal{{ item.id }}" 
+                             tabindex="-1" 
+                             aria-labelledby="removeItemModalLabel{{ item.id }}" 
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title subheading text-center" 
+                                            style="color: #d8b4fe; font-size: 1.5rem; font-weight: bold;" 
+                                            id="removeItemModalLabel{{ item.id }}">
+                                            Confirm Remove Item
+                                        </h5>
+                                        <button type="button" 
+                                                class="btn-close" 
+                                                data-bs-dismiss="modal" 
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body body-text pt-3" 
+                                         style="color: #eee;  ">
+                                        Are you sure you want to remove {{ item.product.name }} from your cart?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" 
+                                                class="btn btn-secondary" 
+                                                data-bs-dismiss="modal"
+                                                style="color: #eee;">
+                                            Cancel
+                                        </button>
+                                        <a href="{{ url_for('delete_cart_item', id=item.id) }}" 
+                                           class="btn btn-danger" style="color: #eee;">
+                                            Yes, Remove
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm" 
+                style="background-color: #eee; 
+                       border-radius: 12px; 
+                       border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body">
+                    <h5 class="card-title text-center" 
+                        style="color: rgba(0, 45, 33, 0.9); font-size: 1.8rem;">
+                        Order Summary
+                    </h5>
+                    <hr>
+                    <p class="d-flex justify-content-between body-text" style="font-size: 1rem;">
+                        <span>Subtotal:</span>
+                        <span>Nrs. {{ context['total_price'] }}</span>
+                    </p>
+                    <p class="d-flex justify-content-between body-text" style="font-size: 1rem;">
+                        <span>VAT Amount (13%):</span>
+                        <span>Nrs. {{ 0.13 * context['total_price'] }}</span>
+                    </p>
+                    <p class="d-flex justify-content-between body-text" style="font-size: 1rem;">
+                        <span>Net Amount:</span>
+                        <span>Nrs. {{ context['total_price'] + (0.13 * context['total_price']) }}</span>
+                    </p>
+                    <hr>
+                    <div class="d-flex justify-content-between" >
+                        <!-- Button to set delivery address -->
+                        <a href="" 
+                           class="btn btn-primary btn-lg w-48" style="font-size: small;">
+                            <i class="fas fa-map-marker-alt"></i> Set Delivery Address
+                        </a>
+                        <!-- Button To Make payment -->
+                        <!-- Button to trigger modal -->
+                        <button type="button" class="btn btn-success btn-lg w-48" style="font-size: small;" data-bs-toggle="modal" data-bs-target="#checkoutModal">
+                            <i class="fas fa-credit-card"></i> Checkout
+                        </button>
+
+                        <!-- Checkout Modal -->
+                        <!-- Confirmation Modal for Checkout -->
+                        <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.5rem; font-weight: bold;" id="checkoutModalLabel">
+                                            Confirm Checkout
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body body-text pt-3" style="color: #eee;">
+                                        Are you sure you want to proceed to checkout?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="color: #eee;">
+                                            Cancel
+                                        </button>
+                                        <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+                                            <input type="hidden" id="amount" name="amount" value="{{context['total_price']}}" required>
+                                            <input type="hidden" id="tax_amount" name="tax_amount" value="0" required>
+                                            <input type="hidden" id="total_amount" name="total_amount" value="{{context['total_price']}}" required>
+                                            <input type="hidden" id="transaction_uuid" name="transaction_uuid" value="{{context['uuid']}}" required>
+                                            <input type="hidden" id="product_code" name="product_code" value="EPAYTEST" required>
+                                            <input type="hidden" id="product_service_charge" name="product_service_charge" value="0" required>
+                                            <input type="hidden" id="product_delivery_charge" name="product_delivery_charge" value="0" required>
+                                            <input type="hidden" id="success_url" name="success_url" value="http://127.0.0.1:5500/cart" required>
+                                            <input type="hidden" id="failure_url" name="failure_url" value="http://127.0.0.1:5500/cart" required>
+                                            <input type="hidden" id="signed_field_names" name="signed_field_names" value="total_amount,transaction_uuid,product_code" required>
+                                            <input type="hidden" id="signature" name="signature" value="{{context['signature']}}" required>
+                                            <input value="Proceed" type="submit" class="btn btn-success" style="color: #eee;">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}
+
