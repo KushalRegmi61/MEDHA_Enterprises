@@ -1,0 +1,56 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Product Modification Form -->
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Add New Product Form Card -->
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-lg border-0" style="border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #002d25, #004d3d);">
+                    <!-- Card Header Section -->
+                    <div class="card-header text-center py-4">
+                        <h3 class="subheading pt-3" style="color: #d8b4fe;">Update Product Details</h3>
+                        <p class="body-text text-white text-center mt-4">"Keep your product information up-to-date to ensure customer satisfaction."</p>
+                    </div>
+                    
+                    <!-- Flashed Message Section -->
+                    <div class="py-2 text-center">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div class="alert-container">
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
+                            style="border-radius: 8px;   border: none; text-align: center;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+
+
+                    <!-- Card Body -->
+                    <div class="card-body p-5">
+                        <!-- Flash Message Section -->           
+                        <div class="form-container secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
+                            <!-- Configuring the Cke-Editor -->
+                            {{ ckeditor.load() }}
+                            {{ ckeditor.config(name='description') }}
+
+
+                            {{ render_form(form, novalidate=True) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
