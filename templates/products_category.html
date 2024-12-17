@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="page-title">Product Category List</h2>
+      <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+    </div>
+  </div>
+
+  <!-- Flash Message Section -->
+  <div class="col-12 text-center">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="alert-container">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
+          style="border-radius: 8px;   border: none; text-align: center;">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div> 
+  <!-- Product Categories -->
+  <div class="row g-4">
+    {% for category, image_url in category_images.items() %}
+    <div class="col-lg-3 col-md-4 col-sm-6">
+      <a href="{{ url_for('products', category=category) }}" class="category-card-link">
+        <div class="card category-card">
+          <img src="{{ url_for('static', filename=image_url) }}" class="card-img-top" alt="{{ category }}"  style="background-color: #eee; border-radius: 12px 12px 0 0;">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ category }} Series</h5>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  
+{% endblock %}
