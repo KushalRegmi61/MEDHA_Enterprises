@@ -1,0 +1,126 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Product Details Section -->
+    <div class="row align-items-center">
+        <!-- Product Image -->
+        <div class="col-md-6">
+            <div class="image-container shadow-sm rounded bg-light p-3">
+                <img src="{{ url_for('static', filename=product.image_url) }}" 
+                     alt="{{ product.name }}" 
+                     class="img-fluid rounded" 
+                     style="width: 100%; max-width: 400px; height: auto; object-fit: contain;">
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="alert-container mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Product Title, Category, Price -->
+            <h1 class="product-title mb-3">{{ product.name }}</h1>
+            <p class="text-muted mb-2">Category: <strong>{{ product.category }}</strong></p>
+            <p class="product-price text-success fs-4 fw-semibold">NRs. {{ product.price }}</p>
+
+            <!-- User Actions -->
+            <div class="d-flex gap-2 my-4">
+                <!-- Add to Cart Button -->
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addToCartModal">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+                <!-- Buy Now Button -->
+                <a href="#" class="btn btn-outline-success btn-lg">
+                    <i class="fas fa-shopping-bag"></i> Buy Now
+                </a>
+            </div>
+
+            <!-- Modal for Add to Cart -->
+            <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
+                        <div class="modal-header">
+                            <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.3rem; font-weight: bold;" id="addToCartModalLabel">Add to Cart</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
+                            {{ render_form(form, novalidate=True) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Description -->
+            <hr class="my-4">
+            <h3 class="product-subtitle subheading" style="font-size: 1.3rem; font-weight: bold;">Description</h3>
+            <div class="product-description body-text ck-content" style="font-size: .9rem;">
+                {{ product.description |safe }}
+            </div>
+
+            <!-- Admin Actions (Visible Only to Admins) -->
+            {% if current_user.id == 1 %}
+            <hr class="my-4">
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('modify_product', id=product.id) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+                <!-- Delete Button with Modal -->
+                <button class="btn btn-danger" 
+                        title="Delete Product" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteProductModal{{ product.id }}" 
+                        aria-label="Delete Product">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+
+                <!-- Confirmation Modal for Delete Product -->
+                <div class="modal fade" 
+                     id="deleteProductModal{{ product.id }}" 
+                     tabindex="-1" 
+                     aria-labelledby="deleteProductModalLabel{{ product.id }}" 
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title subheading" id="deleteProductModalLabel{{ product.id }}">
+                                    Confirm Delete Product
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body body-text">
+                                Are you sure you want to delete {{ product.name }}?
+                            </div>
+                            <div class="modal-footer">
+                                    <button type="button" 
+                                            class="btn btn-secondary" 
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+                                    <a href="{{ url_for('delete_product', id=product.id) }}" 
+                                       class="btn btn-danger">
+                                        Yes, Remove
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
