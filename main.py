@@ -97,8 +97,9 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    # orders = db.relationship('Order', back_populates='user')
-    cart = db.relationship('Cart', back_populates='user') # Add cart relationship
+    cart = db.relationship('Cart', back_populates='user') # Add cart 
+    orders = db.relationship('Order', back_populates='user') # Add order relationship
+    delivery_address = db.relationship('DeliveryAddress', back_populates='user') # Add delivery address relationship
 
 # Creating a product class
 class Product(db.Model):
@@ -109,7 +110,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
-    # orders = db.relationship('Order', back_populates='product')
+    orders = db.relationship('Order', back_populates='product')
     cart = db.relationship('Cart', back_populates='product') # Add cart relationship
 
 
@@ -122,6 +123,29 @@ class Cart(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     user = db.relationship('User', back_populates='cart') # Add user relationship
     product = db.relationship('Product', back_populates='cart') # Add product relationship
+
+# creating a order class
+class Order(db.Model):
+    __tablename__ = 'order'
+    id = db.Column(db.Integer, primary_key=True)    
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False) # Foreign key to user
+    order_uuid = db.Column(db.String(100), nullable=False, unique=True) # Unique order identifier
+    product_id = db.Column(db.Integer, ForeignKey('product.id'), nullable=False) # Foreign key to product
+    order_date = db.Column(db.Date, nullable=False, default=date.today()) # Default to today's date
+    is_delivered = db.Column(db.Boolean, nullable=False, default=False) # Default to False
+    delivery_address = db.Column(db.String(100), nullable=False) # Address for delivery
+    quantity = db.Column(db.Integer, nullable=False) # Quantity of product ordered
+    user = db.relationship('User', back_populates='orders') # Add user relationship
+    product = db.relationship('Product', back_populates='orders') # Add product relationship
+
+# creating a delivery address class
+class DeliveryAddress(db.Model):
+    __tablename__ = 'delivery_address'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    address = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(100), nullable=False)
+    user = db.relationship('User', back_populates='delivery_address') # Add user relationship
 
 # Initializing the database
 with app.app_context():
@@ -347,20 +371,6 @@ def cart():
         flash("You need to login first", "danger")
         return redirect(url_for('login'))
     
-    # Handling the form submission
-    if request.method == 'GET':
-        data = request.args.get('data')
-        if data:
-            flash("Transaction successful", "success")
-            decoded_data = base64.b64decode(data).decode('utf-8')
-            print(decoded_data)
-            map_data = json.loads(decoded_data)
-
-            print(map_data)
-    
-
-    
-
     # getting all the products in the cart by user_id
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     
@@ -386,9 +396,61 @@ def cart():
     }
 
 
+    
+    # Handling the form submission
+    if request.method == 'GET':
+        data = request.args.get('data')
+        if data:
+            decoded_data = base64.b64decode(data).decode('utf-8')
+            print(decoded_data)
+            map_data = json.loads(decoded_data)
 
+            # get the transaction status
+            if map_data['status'] == 'COMPLETE':
+                flash("Transaction successful", "success")
+
+                # Create an order for each cart item
+                for item in cart_items:
+                    new_order = Order(
+                        user_id=current_user.id,
+                        order_uuid=str(uuid_val),
+                        product_id=item.product_id,
+                        quantity=item.quantity,
+                        delivery_address=current_user.address
+                    )
+                    db.session.add(new_order) # Add the order to the session
+                    db.session.delete(item) # Remove the item from the cart
+                    db.session.commit()
+
+                    return redirect(url_for('orders'))
+
+            else:
+                flash("Transaction failed", "danger")
+
+
+            print(map_data)
+    
+
+    
     # return the cart page
     return render_template('shoppingcart.html', cart_items = cart_items, total_price=total_price, total_quantity=total_quantity , context=context)
+
+
+# Creating a new route for the orders
+@app.route('/orders')
+def orders():
+    # Logic for displaying the orders if authenticated
+    if not current_user.is_authenticated:
+        flash("You need to login first", "danger")
+        return redirect(url_for('login'))
+    
+    # getting all the orders by user_id
+    orders = Order.query.filter_by(user_id=current_user.id).all()
+    
+    
+    # return the orders page
+    return render_template('orders.html', orders=orders)
+
 
 # Creating a route to update the quantity of a cart item
 @app.route('/update_cart_item/<int:id>', methods=['POST'])
