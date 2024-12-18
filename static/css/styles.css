@@ -411,6 +411,30 @@ list-inline-item a {
 }
 
 
+/* Task Card Styles */
+.card {
+  background-color: #eee; /* Dark card background */
+  border-radius: 8px; /* Rounded corners */
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
+}
+
+/* Task Card Hover Effect */
+.card:hover {
+  transform: translateY(-5px); /* Slightly lift the card */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+/* Task Title */
+.card-title {
+  color: #002D25; /* White text for task title */
+  font-size: 1.1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 
 /* Task Due Date */
 .text-muted {
