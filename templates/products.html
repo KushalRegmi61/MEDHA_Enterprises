@@ -6,8 +6,16 @@
   <!-- Empty Product List Section -->
   <div class="text-center py-3">
     <p class="text-muted fs-5">Sorry, No products found in the {{ category | capitalize }} series.</p>
+    {% if current_user.id == 1 %}
+    <a class="btn btn-outline-primary btn-lg" href="{{url_for('add_product')}}">
+      <i class="fas fa-plus-circle me-2"></i>Add New Product
+      </a>
+    {% else %}
+
     <a href="{{ url_for('products_category') }}" class="btn btn-outline-primary btn-lg">
-      <i class="bi bi-arrow-right-circle"></i> Browse Other Products</a>
+      <i class="bi bi-arrow-right-circle"></i> Browse Other Products
+    </a>
+    {% endif %}
   </div>
 
 {% else %}
@@ -27,7 +35,7 @@
     {% for product in products %}
     <div class="col-lg-4 col-md-6 col-sm-12">
       <a href="{{url_for('product_details', id=product.id)}}" class="category-card-link text-decoration-none">
-        <div class="card category-card shadow-sm border-0">
+        <div class="card category-card shadow-sm ">
           <!-- Top part of the card with image -->
           <div class="card-img-top d-flex justify-content-center align-items-center" 
                style="background-color: #eee; border-radius: 12px 12px 0 0; height: 200px; overflow: hidden;">
