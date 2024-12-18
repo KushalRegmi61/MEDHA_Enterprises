@@ -1,5 +1,5 @@
 # **JAMUNA | SUPPLIERS**  
-##*"Luxury for your bathroom, ease for your life!"*  
+## *"Luxury for your bathroom, ease for your life!"*  
 
 Welcome to the **Jamuna Suppliers Online Shop**, your ultimate hub for premium bathroom fittings and home improvement essentials. As Nepal's trusted reseller of Topsan products, we focus on quality, style, and customer satisfaction.
 
