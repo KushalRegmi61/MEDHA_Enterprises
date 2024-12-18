@@ -426,15 +426,6 @@ list-inline-item a {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
 }
 
-/* Task Title */
-.card-title {
-  color: #002D25; /* White text for task title */
-  font-size: 1.1rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
 
 /* Task Due Date */
 .text-muted {
