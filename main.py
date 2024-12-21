@@ -80,7 +80,7 @@ class Base(DeclarativeBase):
 
 # connect to the database
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///shop.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL", "sqlite:///shop.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # creating the database
