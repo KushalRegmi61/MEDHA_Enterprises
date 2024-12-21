@@ -165,10 +165,15 @@ def register():
     if form.validate_on_submit():
         email = form.email.data
         name = form.name.data
+        address = form.address.data
+        phone_number = form.phone_number.data
+
         new_user = User(
             email=email,
             password=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8),
-            name=name
+            name=name,
+            address=address,
+            phone_number=phone_number
         )
         #check if the user already exists
         user = db.session.query(User).filter_by(email=email).first()
