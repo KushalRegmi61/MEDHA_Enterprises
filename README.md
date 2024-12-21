@@ -24,7 +24,7 @@ Explore the live website:
 
 Get a glimpse of the platform:  
 
-![Website Operation Demo](https://github.com/KushalRegmi61/Jamuna_Suppliers_OnlineShop/assets/demo.gif)  
+![Website Operation Demo](static/assets/gif/demo.gif)  
 
 ---
 
