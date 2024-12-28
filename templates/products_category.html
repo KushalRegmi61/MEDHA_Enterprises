@@ -31,7 +31,7 @@
     {% for category, image_url in category_images.items() %}
     <div class="col-lg-4 col-md-4 col-sm-6">
       <a href="{{ url_for('products', category=category) }}" class="category-card-link">
-        <div class="card category-card shadow-sm ">
+        <div class="card category-card shadow-sm " style="height: 300px;">
           <!-- Top part of the card with image -->
           <div class="card-img-top d-flex justify-content-center align-items-center" 
             style="background-color: #eee; border-radius: 12px 12px 0 0; height: 200px; overflow: hidden;">
@@ -43,7 +43,10 @@
 
 
           <!-- Card body -->
-          <div class="card-body text-center  text-white">
+          <div 
+          class="card-body text-center  text-white"
+          style="display: flex; justify-content: center; align-items: center;"
+          >
             <h5 class="card-title mb-0">{{ category }} Series</h5>
           </div>
 
