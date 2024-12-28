@@ -8,7 +8,7 @@
         <!-- Product Image -->
         <div class="col-md-6">
             <div class="image-container shadow-sm rounded bg-light p-3">
-                <img src="{{ url_for('static', filename=product.image_url) }}" 
+                <img src="{{ product.image_url }}" 
                      alt="{{ product.name }}" 
                      class="img-fluid rounded" 
                      style="width: 100%; max-width: 400px; height: auto; object-fit: contain;">
