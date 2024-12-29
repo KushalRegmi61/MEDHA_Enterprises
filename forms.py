@@ -62,10 +62,16 @@ class AddProductForm(FlaskForm):
                                 validators=[DataRequired()],
                                 render_kw={"size": 30, "placeholder": "Enter product description"}
                                 )
-    image_url = FileField('Image',
-                          validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')],
-                          render_kw={"size": 30, "placeholder": "Choose an image file"}
-                          )
+    # image_url = FileField('Image',
+    #                       validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')],
+    #                       render_kw={"size": 30, "placeholder": "Choose an image file"}
+    #                       )
+    # fix the image_url for url instead of file
+    image_url = StringField('Image URL',
+                           validators=[DataRequired(), URL()],
+                           render_kw={"size": 30, "placeholder": "Enter image URL"}
+                           )
+
     submit = SubmitField(label="Add Product", render_kw={"size": 30})
 
 # creating a form to update product
