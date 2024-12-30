@@ -56,110 +56,136 @@
 
   <body>
     <div class="wrapper">
-      <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background: linear-gradient(135deg, #002d25, #004d3d);">
-      <div class="container-fluid px-4 py-3">
-        
-        <!-- Logo for the website -->
-        <a class="navbar-brand logo" href="/" style="position: relative; padding-left: 1rem;">
-      <span class="logo-text">JS</span>
-        </a>   
-        <!-- Toggle button for mobile view -->
-        <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarResponsive"
-      aria-controls="navbarResponsive"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-        >
-      <i class="fas fa-bars" style="color: #fff;"></i>
-        </button>
-        <!-- Navbar items -->
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ms-auto">
-            
-            <!-- Left Section: Main Navigation Links -->
-            <div class="d-flex flex-column flex-lg-row align-items-center">
-            <!-- manage list  -->
-            {% if current_user.id == 1 %}
-            <li class="nav-item">
-              <a class="nav-link px-3" href="{{url_for('add_product')}}">
-              <i class="fas fa-plus-circle me-2"></i>Add item
-              </a>
-            </li>
-            {% endif %}
-
-            <li class="nav-item">
-              <a class="nav-link px-3" href="{{url_for('products_category')}}">
-              <i class="fas fa-eye me-2"></i>Products
-              </a>
-            </li>
+      <div class="container-fluid pt-3" style="background-color: #f8f9fa; border-bottom: 2px solid #002D25;">
+        <div class="row align-items-center">
+          <!-- Left Column: Website Logo and Name -->
+          <div class="col-md-6 d-flex justify-content-center justify-content-md-start">
+            <div class="d-flex align-items-center pt-3">
+              <h2 class="subheading text-center text-md-start" style="color: #002D25; border: 2px solid #002D25; border-radius: 15px; padding: 10px 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <span style="font-size: 1.8rem; font-weight: bold;">JAMUNA |</span><br>
+                <span style="font-size: 1.6rem;">SUPPLIERS</span>
+              </h2>
             </div>
-            <!-- Right Section: Extra Navigation Links -->
-            <div class="d-flex flex-column flex-lg-row align-items-center">
-            {% if current_user.is_authenticated %}
-            <!-- user profile display section -->
-            <li class="nav-item dropdown">
-              <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              style="color: #ffffff;"
-              >
-              <i class="fas fa-user me-2"></i>{{ current_user.name }}
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-              <!-- User Profile and Orders Section: To be Added Later:  -->
-              <!-- <li>
-                <a class="dropdown-item" href="#">
-                <i class="fas fa-user me-2"></i>Profile
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="">
-                <i class="fas fa-box me-2"></i>Orders
-                </a>
-              </li>
-              <li>
-                <hr class="dropdown-divider" />
-              </li> -->
-
-                <!--Button to Logout user  -->
-              <li>
-                <a class="dropdown-item" href="{{url_for('logout')}}">
-                <i class="fas fa-sign-out-alt me-2"></i>Logout
-                </a>
-              </li>
+          </div>
+      
+          <!-- Right Column: Contact Details -->
+          <div class="col-md-6 d-flex justify-content-center justify-content-md-end" style="color: #002D25; padding-right: 2rem;">
+            <div class="text-center text-md-end">
+              <ul class="list-unstyled mb-0 body-text" style="font-size: 1rem; line-height: 1.8;">
+                <li>
+                  <i class="fas fa-phone-volume me-2"></i>
+                  <strong>CALL US:</strong> +977 9855063147
+                </li>
+                <li>
+                  <i class="fas fa-envelope me-2"></i>
+                  <a href="mailto:krishnaregmi230@gmail.com" class="text-decoration-none text-dark">
+                    krishnaregmi230@gmail.com
+                  </a>
+                </li>
               </ul>
-            </li>
-            {% else %}
-            <!-- login -->
-            <li class="nav-item">
-              <a class="nav-link px-3" href="/login">
-              <i class="fas fa-sign-in-alt me-2"></i>Login
-              </a>
-            </li>
-            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+
+      <!-- Navigation-->
+      <nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background: linear-gradient(135deg, #002d25, #004d3d);">
+        <div class="container-fluid px-4 py-2">
+          
+          <!-- Logo , Home and Contact_Us Section -->
+           <div class=" d-flex justify-content-center justify-content-md-start" >
+            <!-- Logo Section -->
+            <!-- Logo for the website -->
+            <a class="navbar-brand logo" href="/" style="position: relative; padding-left: 1rem;">
+              <span class="logo-text">JS</span>
+            </a> 
+
             
-            <!-- Add new todo List -->
+            <!-- Home Link -->
             <li class="nav-item">
-              <a class="nav-link px-3" href="{{url_for('cart')}}">
-              <i class="fa fa-fw fa-shopping-cart me-2"></i>Cart
+              <a class="nav-link px-3" href="/">
+                <i class="fas fa-home me-2"></i>Home
               </a>
             </li>
-              </div>
-              
+
+            <!-- Contact Us  -->
+            <li class="nav-item">
+              <a class="nav-link px-3" href="/">
+                Contact Us
+              </a>
+            </li>
+
+           </div>
+
+
+          <!-- Toggle Button for Mobile View -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars" style="color: #fff;"></i>
+          </button>
+      
+          <!-- Navbar Items -->
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav d-flex flex-column  flex-md-row   ms-auto align-items-center justify-content-start" >
+
+      
+              <!-- Admin Section: Add Item -->
+              {% if current_user.id == 1 %}
+              <li class="nav-item">
+                <a class="nav-link px-3" href="{{url_for('add_product')}}">
+                  <i class="fas fa-plus-circle me-2"></i>Add Item
+                </a>
+              </li>
+              {% endif %}
+      
+              <!-- About_US Link -->
+              <li class="nav-item">
+                <a class="nav-link px-3" href="{{url_for('products_category')}}">
+                  About Us
+                </a>
+              </li>
+
+              <!-- Products Link -->
+              <li class="nav-item">
+                <a class="nav-link px-3" href="{{url_for('products_category')}}">
+                  Products
+                </a>
+              </li>
+      
+              <!-- User Section -->
+              {% if current_user.is_authenticated %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user me-2"></i>{{ current_user.name }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li>
+                    <a class="dropdown-item" href="{{url_for('logout')}}">
+                      <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link px-3" href="/login">
+                  <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+              </li>
+              {% endif %}
+      
+              <!-- Cart Link -->
+              <li class="nav-item">
+                <a class="nav-link px-3" href="{{url_for('cart')}}">
+                  <i class="fas fa-heart me-2"></i> WishList
+                </a>
+              </li>
+      
             </ul>
           </div>
-          
         </div>
       </nav>
+      
 
       <!-- Page Content -->
         {% block content %}
@@ -225,11 +251,15 @@
               </li>
               <li class="mb-2">
                 <i class="fas fa-phone-volume me-2"></i>
-                <strong>Customer Care:</strong> <br> <span style="padding-left: 2em;">+977 9855063147</span>
+                <strong>Call Us:</strong> <br>
+                 <span style="padding-left: 2em;"><strong>: </strong>+977 9855063147</span>
               </li>
               <li class="mb-2">
-                <i class="fas fa-phone-volume me-2"></i>
-                +977 9845698361
+                <i class="fab fa-whatsapp me-2"></i>
+                <strong>Whatsapp:</strong> <br> 
+                <span style="padding-left: 2rem;"><strong>: </strong> +977 9855063147</span> <br>
+                <span style="padding-left: 2rem;"><strong>: </strong>+977 9840305547</span> <br>
+                <span style="padding-left: 2rem;"><strong>: </strong>+977 9845807018</span>
               </li>
               <li>
                 <i class="fas fa-envelope-open-text me-2"></i>
