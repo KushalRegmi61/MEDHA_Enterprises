@@ -58,7 +58,6 @@ html {
 }
 
 /* Optional underline effect for navigation link hover */
-.nav-link:hover::after,
 .nav-item:hover::after {
   content: '';
   position: absolute;
