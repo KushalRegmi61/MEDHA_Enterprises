@@ -158,14 +158,15 @@
                 <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-user me-2"></i>{{ current_user.name }}
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="position: absolute; z-index: 1050;">
                   <li>
-                    <a class="dropdown-item" href="{{url_for('logout')}}">
+                    <a class="dropdown-item" href="{{ url_for('logout') }}">
                       <i class="fas fa-sign-out-alt me-2"></i>Logout
                     </a>
                   </li>
                 </ul>
               </li>
+              
               {% else %}
               <li class="nav-item">
                 <a class="nav-link px-3" href="/login">
