@@ -109,23 +109,28 @@
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
+              style="color: #ffffff;"
               >
               <i class="fas fa-user me-2"></i>{{ current_user.name }}
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
+
+              <!-- User Profile and Orders Section: To be Added Later:  -->
+              <!-- <li>
                 <a class="dropdown-item" href="#">
                 <i class="fas fa-user me-2"></i>Profile
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" href="{{url_for('orders')}}">
+                <a class="dropdown-item" href="">
                 <i class="fas fa-box me-2"></i>Orders
                 </a>
               </li>
               <li>
                 <hr class="dropdown-divider" />
-              </li>
+              </li> -->
+
+                <!--Button to Logout user  -->
               <li>
                 <a class="dropdown-item" href="{{url_for('logout')}}">
                 <i class="fas fa-sign-out-alt me-2"></i>Logout
