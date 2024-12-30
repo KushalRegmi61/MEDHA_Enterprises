@@ -51,62 +51,83 @@ html {
   transition: color 0.3s ease, transform 0.3s ease; /* Smooth transitions for hover effects */
 }
 
-.nav-link:hover,
-.nav-item:hover {
-  color:#eee; /* Purple color on hover, which complements the theme */
-  transform: scale(1.1); /* Slightly enlarge the text on hover */
+/* Navigation Links */
+.nav-link,
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #eee;
+  letter-spacing: 2px;
+  transition: color 0.3s ease, transform 0.3s ease;
+  position: relative; /* Required for the underline effect */
 }
 
-/* Optional underline effect for navigation link hover */
+/* Hover Effect: Color and Slight Scale */
+.nav-link:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+/* White Underline Hover Effect */
 .nav-item:hover::after {
   content: '';
   position: absolute;
   width: 100%;
   height: 3px;
-  background-color:#eee; /* Purple underline effect */
+  background-color: #ffffff; /* White underline */
   bottom: -5px;
   left: 0;
   transition: width 0.3s ease;
 }
 
-/* Custom icon styles (if you have icons inside the navigation links) */
-.nav-link i,
-.nav-item i {
-  margin-right: 0.5rem; /* Space between icon and text */
-  color:#eee; /* Set icon color to purple */
-  font-size: 1.3rem; /* Slightly larger icon for emphasis */
+/* Prevent Dropdown Toggle from Scaling or Underline */
+.nav-item.dropdown .nav-link {
+  transition: none;
 }
 
-.nav-link:hover .nav-item,
-.nav-item:hover .nav-link {
-  color: #ffffff; /* Premium gold color on hover */
+.nav-item.dropdown:hover .nav-link {
+  transform: none;
+}
+
+/* Remove Underline from Dropdown Items */
+.nav-item.dropdown:hover::after {
+  content: none;
 }
 
 /* Dropdown Menu */
 .dropdown-menu {
-  background-color: #333; /* Dark background for dropdown */
-  border: none; /* Remove default border */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  background-color: #333;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute !important;
+  z-index: 1050 !important;
 }
 
+/* Dropdown Items */
 .dropdown-item {
   font-family: "Open Sans", sans-serif;
   font-size: 1rem;
-  color: #eee; /* Light teal/cyan color */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+  color: #eee;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #444; /* Slightly darker background on hover */
-  color: #ffffff; /* White color on hover */
+  background-color: #444;
+  color: #ffffff;
 }
 
+/* Prevent Hover Effects on Dropdown Icons */
 .dropdown-item i {
-  margin-right: 0.5rem; /* Space between icon and text */
-  color: #eee; /* Set icon color */
-  font-size: 1.3rem; /* Slightly larger icon for emphasis */
+  margin-right: 0.5rem;
+  color: #eee;
+  font-size: 1.3rem;
 }
+
 
 /* General logo styling */
 .logo {
