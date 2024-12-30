@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="container my-5">
-    <h3 class="subheading py-3 " style="border-left: 4px solid   rgba(0, 45, 33, 0.9); padding-left: 2rem;">Shopping Cart</h3>
+    <h3 class="subheading py-3 " style="border-left: 4px solid   rgba(0, 45, 33, 0.9); padding-left: 2rem;">Your WishList</h3>
     <hr>
     <!-- Flash Message Section -->
     <div class="col-12 text-center">
@@ -23,7 +23,7 @@
     {% if cart_items|length == 0 %}
     <!-- Empty Cart Section -->
     <div class="text-center py-5">
-        <p class="text-muted fs-5">Your cart is empty. Add some items!</p>
+        <p class="text-muted fs-5">Your WishList is empty. Add some items!</p>
         <a href="{{ url_for('products_category') }}" class="btn btn-outline-primary btn-lg">Browse Products</a>
     </div>
     {% else %}
@@ -36,57 +36,53 @@
             {% for item in cart_items %}
             <div class="flex-grow-1 mb-3">
                 <div class="card border-0 shadow-sm order-card">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div class="order-title text-truncate" style="flex-basis: 40%; max-width: 40%;">
-                            <h4 class="card-title body-text" style="font-size: 1.5rem ; color:    rgba(0, 45, 33, 0.9);;">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <!-- Product Details (Left Side) -->
+                        <div class="order-title" style="flex: 1; padding-right: 1rem;">
+                            <h4 class="card-title body-text mb-2" 
+                                style="font-size: 1.3rem; color: rgba(0, 45, 33, 0.9); font-weight: 600;">
                                 {{ item.product.name }}
                             </h4>
-                            <p class="text-muted mb-1">
-                                <strong>Price:</strong> Nrs. {{ item.product.price }}
-                            </p>
-                            <p class="text-muted mb-1">
-                                <strong>Total:</strong> Nrs. {{ item.product.price * item.quantity }}
-                            </p>
-                            <p class="text-muted mb-1">
-                                <strong>Qty:</strong>
-                                <form action="{{ url_for('update_cart_item', id=item.id) }}" method="post" class="d-inline">
-                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control d-inline-block" style="width: 70px;" required>
-                                    <button type="submit" class="btn btn-primary btn-sm" title="Update item" style="font-size: 0.7rem;">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </form>
-                            </p>
-                        </div>
-                        <div class="d-flex flex-column align-items-end" style="flex-grow: 1;">
-                            <div class="text-center mb-2">
-                                <img src="{{ url_for('static', filename=item.product.image_url) }}" 
-                                    alt="{{ item.product.name }}" 
-                                    class="img-fluid rounded" 
-                                    style="max-height: 100px; object-fit: cover;">
-                            </div>
-                            <div>
+                            <!-- <p class="text-muted mb-1" style="font-size: 0.9rem;">
+                                High-quality and reliable product tailored to your needs.
+                            </p> -->
+                            <div class="mt-3">
                                 <!-- Trigger for Delete Confirmation Modal -->
-                                <a href="#" class="btn btn-danger btn-sm" style="font-size: small;" data-bs-toggle="modal" data-bs-target="#deleteCartItemModal{{ item.id }}">
-                                    <i class="fas fa-trash" style="font-size: small;"></i>
+                                <a href="#" class="btn btn-danger btn-sm" 
+                                    style="font-size: 0.9rem;" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteCartItemModal{{ item.id }}">
+                                    <i class="fas fa-trash"></i> Remove
                                 </a>
                             </div>
+                        </div>
+        
+                        <!-- Product Image (Right Side) -->
+                        <div class="text-center" style="flex: 0 0 150px;">
+                            <img src="{{ item.product.image_url }}" 
+                                alt="{{ item.product.name }}" 
+                                class="img-fluid rounded" 
+                                style="max-height: 150px; object-fit: cover;">
                         </div>
                     </div>
                 </div>
             </div>
-
+        
             <!-- Delete Item Modal -->
-            <div class="modal fade" id="deleteCartItemModal{{ item.id }}" tabindex="-1" aria-labelledby="deleteCartItemModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal fade" id="deleteCartItemModal{{ item.id }}" tabindex="-1" 
+                aria-labelledby="deleteCartItemModalLabel{{ item.id }}" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
                         <div class="modal-header">
-                            <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.5rem; font-weight: bold;" id="deleteCartItemModalLabel{{ item.id }}">
+                            <h5 class="modal-title subheading text-center" 
+                                style="color: #d8b4fe; font-size: 1.5rem; font-weight: bold;" 
+                                id="deleteCartItemModalLabel{{ item.id }}">
                                 Confirm Removal
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body body-text pt-3" style="color: #eee;">
-                            Are you sure you want to remove <strong>{{ item.product.name }}</strong> from your cart?
+                        <div class="modal-body body-text pt-3" style="color: #eee; text-align: center;">
+                            Are you sure you want to remove <br><strong>{{ item.product.name }}</strong> <br>from  your WishList?
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="color: #eee;">Cancel</button>
@@ -99,49 +95,83 @@
             </div>
             {% endfor %}
         </div>
+        
+        
 
 
         <!-- Order Summary Section -->
         <div class="col-md-5">
             <div class="card border-0 shadow-sm" 
-                style="background-color: #eee; 
+                style="background-color: #f9fafb; 
                        border-radius: 12px; 
-                       border: 1px solid rgba(255, 255, 255, 0.1);">
+                       border: 1px solid rgba(0, 45, 33, 0.1);">
                 <div class="card-body">
-                    <h5 class="card-title text-center" 
-                        style="color: rgba(0, 45, 33, 0.9); font-size: 1.8rem;">
-                        Order Summary
+                    <!-- Enquiry Box Title -->
+                    <h5 class="subheading text-center mb-3" 
+                        style="color: rgba(0, 45, 33, 0.9); font-size: 1.8rem; font-weight: bold;">
+                        Enquiry Box
                     </h5>
+        
+                    <!-- Short Note -->
+                    <p class="text-center body-text" 
+                        style="font-size: 1rem; color: #ff6347;">
+                        Note: Need help or have questions? <strong>Contact us now!</strong>
+                    </p>
+                    <p class="text-center body-text mb-4" 
+                        style="font-size: 1rem; color: rgba(0, 45, 33, 0.9); font-weight: bold;">
+                        Your first step to building your dream home.
+                    </p>
+        
                     <hr>
-                    <p class="d-flex justify-content-between body-text" style="font-size: 1rem;">
-                        <span>Subtotal:</span>
-                        <span>Nrs. {{ context['total_price'] }}</span>
-                    </p>
-                    <p class="d-flex justify-content-between body-text" style="font-size: 1rem;">
-                        <span>VAT Amount (13%):</span>
-                        <span>Nrs. {{ 0.13 * context['total_price'] }}</span>
-                    </p>
-                    <p class="d-flex justify-content-between body-text" style="font-size: 1rem;">
-                        <span>Net Amount:</span>
-                        <span>Nrs. {{ context['total_price'] + (0.13 * context['total_price']) }}</span>
-                    </p>
+        
+                    <!-- Contact Information -->
+                    <h4 class="card-title body-text mb-2" 
+                    style="font-size: 1.3rem; color: rgba(0, 45, 33, 0.9); font-weight: 600; border-left: 4px solid   rgba(0, 45, 33, 0.9); padding-left: 2rem;">
+                        Contact Us
+                    </h4>
+                    <ul class="list-unstyled contact-list pt-3" >
+                        <li class="d-flex justify-content-between align-items-center mb-2" style="list-style: circle;">
+                            <span class="body-text" style="font-size: 1rem; font-weight: 500;"><strong>: </strong>+977-9855063147</span>
+                            <a href="https://wa.me/+9779855063147"  class="btn btn-success btn-sm" style="font-size: 0.8rem;">
+                                <i class="fab fa-whatsapp"></i> Chat Now
+                            </a>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="body-text" style="font-size: 1rem; font-weight: 500;"><strong>: </strong>+977-9845807018</span>
+                            <a href="https://wa.me/+9779845807018"  class="btn btn-success btn-sm" style="font-size: 0.8rem;">
+                                <i class="fab fa-whatsapp"></i> Chat Now
+                            </a>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="body-text" style="font-size: 1rem; font-weight: 500;"><strong>: </strong>+977-9840305547</span>
+                            <a href="https://wa.me/+9779840305547"  class="btn btn-success btn-sm" style="font-size: 0.8rem;">
+                                <i class="fab fa-whatsapp"></i> Chat Now
+                            </a>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="body-text" style="font-size: 1rem; font-weight: 500;"><strong>: </strong>+977-9845698361</span>
+                            <a href="https://wa.me/+9779845698361"  class="btn btn-success btn-sm" style="font-size: 0.8rem;">
+                                <i class="fab fa-whatsapp"></i> Chat Now
+                            </a>
+                        </li>
+                    </ul>
+        
                     <hr>
-                    <div class="d-flex justify-content-between" >
-                        <!-- Button to set delivery address -->
-                        <a href="" 
-                           class="btn btn-primary btn-lg w-48" style="font-size: small;">
-                            <i class="fas fa-map-marker-alt"></i> Set Delivery Address
-                        </a>
-                        <!-- Button To Make payment -->
-                        <!-- Button to trigger modal -->
-                        <button type="button" class="btn btn-success btn-lg w-48" style="font-size: small;" data-bs-toggle="modal" data-bs-target="#checkoutModal">
-                            <i class="fas fa-credit-card"></i> Checkout
-                        </button>   
+        
+                    <!-- Enquiry Button -->
+                    <div class="d-flex justify-content-start">
+                        <button type="button" 
+                                class="btn btn-success btn-lg" 
+                                style="font-size: 0.9rem;" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#checkoutModal">
+                            <i class="fas fa-envelope"></i> Email_US
+                        </button>
                     </div>
                 </div>
- 
             </div>
         </div>
+        
                                                <!-- Checkout Modal -->
                         <!-- Confirmation Modal for Checkout -->
                         <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
