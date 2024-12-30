@@ -45,7 +45,7 @@ html {
   font-family: "Open Sans", sans-serif;
   font-size: 1rem;
   text-transform: uppercase;
-  font-weight: 800; /* Make the text bolder */
+  font-weight: 700; /* Make the text bolder */
   color: #eee; /* Light teal/cyan color to stand out from the rest */
   letter-spacing: 2px; /* Spacing between the letters for a clean, modern look */
   transition: color 0.3s ease, transform 0.3s ease; /* Smooth transitions for hover effects */
@@ -80,6 +80,32 @@ html {
 .nav-link:hover .nav-item,
 .nav-item:hover .nav-link {
   color: #ffffff; /* Premium gold color on hover */
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  background-color: #333; /* Dark background for dropdown */
+  border: none; /* Remove default border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.dropdown-item {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+  color: #eee; /* Light teal/cyan color */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.dropdown-item:hover {
+  background-color: #444; /* Slightly darker background on hover */
+  color: #ffffff; /* White color on hover */
+}
+
+.dropdown-item i {
+  margin-right: 0.5rem; /* Space between icon and text */
+  color: #eee; /* Set icon color */
+  font-size: 1.3rem; /* Slightly larger icon for emphasis */
 }
 
 /* General logo styling */
