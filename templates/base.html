@@ -145,6 +145,14 @@
                   Products
                 </a>
               </li>
+
+              <!-- Contact Us  -->
+              <li class="nav-item">
+                <a class="nav-link px-3" href="/">
+                  Contact Us
+                </a>
+              </li>
+              
       
               <!-- User Section -->
               {% if current_user.is_authenticated %}
@@ -161,6 +169,13 @@
                 </ul>
               </li>
               
+              <!-- Cart Link -->
+              <li class="nav-item">
+                <a class="nav-link px-3" href="{{url_for('cart')}}">
+                  <i class="fas fa-heart me-2"></i> WishList
+                </a>
+              </li>
+              
               {% else %}
               <li class="nav-item">
                 <a class="nav-link px-3" href="/login">
@@ -169,19 +184,8 @@
               </li>
               {% endif %}
       
-              <!-- Cart Link -->
-              <li class="nav-item">
-                <a class="nav-link px-3" href="{{url_for('cart')}}">
-                  <i class="fas fa-heart me-2"></i> WishList
-                </a>
-              </li>
+
               
-              <!-- Contact Us  -->
-              <li class="nav-item">
-                <a class="nav-link px-3" href="/">
-                  Contact Us
-                </a>
-              </li>
 
             </ul>
           </div>
