@@ -160,54 +160,15 @@
         
                     <!-- Enquiry Button -->
                     <div class="d-flex justify-content-start">
-                        <button type="button" 
-                                class="btn btn-success btn-lg" 
-                                style="font-size: 0.9rem;" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#checkoutModal">
+                        <a href="" class="btn btn-success btn-lg"  style="font-size: 0.9rem;">
                             <i class="fas fa-envelope"></i> Email_US
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
         
-                                               <!-- Checkout Modal -->
-                        <!-- Confirmation Modal for Checkout -->
-                        <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.5rem; font-weight: bold;" id="checkoutModalLabel">
-                                            Confirm Checkout
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body body-text pt-3" style="color: #eee;">
-                                        Are you sure you want to proceed to checkout?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="color: #eee;">
-                                            Cancel
-                                        </button>
-                                        <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
-                                            <input type="hidden" id="amount" name="amount" value="{{context['total_price']}}" required>
-                                            <input type="hidden" id="tax_amount" name="tax_amount" value="0" required>
-                                            <input type="hidden" id="total_amount" name="total_amount" value="{{context['total_price']}}" required>
-                                            <input type="hidden" id="transaction_uuid" name="transaction_uuid" value="{{context['uuid']}}" required>
-                                            <input type="hidden" id="product_code" name="product_code" value="EPAYTEST" required>
-                                            <input type="hidden" id="product_service_charge" name="product_service_charge" value="0" required>
-                                            <input type="hidden" id="product_delivery_charge" name="product_delivery_charge" value="0" required>
-                                            <input type="hidden" id="success_url" name="success_url" value="http://127.0.0.1:5500/cart" required>
-                                            <input type="hidden" id="failure_url" name="failure_url" value="http://127.0.0.1:5500/cart" required>
-                                            <input type="hidden" id="signed_field_names" name="signed_field_names" value="total_amount,transaction_uuid,product_code" required>
-                                            <input type="hidden" id="signature" name="signature" value="{{context['signature']}}" required>
-                                            <input value="Proceed" type="submit" class="btn btn-success" style="color: #eee;">
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
     </div>
 
     {% endif %}
