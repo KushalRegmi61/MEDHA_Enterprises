@@ -40,29 +40,16 @@
 
             <!-- User Actions -->
             <div class="d-flex gap-2 my-4">
-                <!-- Add to Cart Button -->
-                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addToCartModal">
+
+                <!-- add to wishlist button -->
+                <a href="{{ url_for('add_to_wishlist', id=product.id) }}" class="btn btn-outline-danger btn-lg">
                     <i class="fas fa-heart"></i> Add to WishList
-                </button>
+                </a>
+
                 <!-- Buy Now Button -->
                 <a href="#" class="btn btn-outline-success btn-lg">
                     <i class="fas fa-info-circle"></i> Enquire Now
                 </a>
-            </div>
-
-            <!-- Modal for Add to Cart -->
-            <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
-                        <div class="modal-header">
-                            <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.3rem; font-weight: bold;" id="addToCartModalLabel">Add to Cart</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
-                            {{ render_form(form, novalidate=True) }}
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Product Description -->
