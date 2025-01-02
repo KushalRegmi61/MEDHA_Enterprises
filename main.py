@@ -75,7 +75,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    cart = db.relationship('Wishlist', back_populates='user') # Add cart 
+    wishList = db.relationship('Wishlist', back_populates='user') # Add wishList 
     delivery_address = db.relationship('DeliveryAddress', back_populates='user') # Add delivery address relationship
 
 # Creating a product class
@@ -87,18 +87,18 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
-    cart = db.relationship('Wishlist', back_populates='product') # Add cart relationship
+    wishList = db.relationship('Wishlist', back_populates='product') # Add wishList relationship
 
 
-# creating a cart class
+# creating a wishList class
 class Wishlist(db.Model):
-    __tablename__ = 'cart'
+    __tablename__ = 'wishList'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, ForeignKey('product.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    user = db.relationship('User', back_populates='cart') # Add user relationship
-    product = db.relationship('Product', back_populates='cart') # Add product relationship
+    user = db.relationship('User', back_populates='wishList') # Add user relationship
+    product = db.relationship('Product', back_populates='wishList') # Add product relationship
 
 
 # creating a delivery address class
@@ -241,7 +241,7 @@ def product_details(id):
     #  render the product details page
     return render_template('product_details.html', product=product)
 
-# creating a route to add product to cart
+# creating a route to add product to wishList
 @app.route('/add_to_wishlist/<int:id>')
 def add_to_wishlist(id):
     # Ensure the user is authenticated
@@ -249,16 +249,16 @@ def add_to_wishlist(id):
         flash("You need to log in first to add items to the wishlist.", "danger")
         return redirect(url_for('login'))
 
-    # Check if the user already has the product in their cart
+    # Check if the user already has the product in their wishList
     cart_item = Wishlist.query.filter_by(user_id=current_user.id, product_id=id).first()
     if cart_item:
-        # Update the quantity of the existing cart item
+        # Update the quantity of the existing wishList item
         cart_item.quantity += 1
         db.session.commit()
         flash(f"Added '{cart_item.product.name}' to your wishlist.", "success")
 
     else:
-        # Add a new cart item for the user
+        # Add a new wishList item for the user
         new_cart_item = Wishlist(user_id=current_user.id, product_id=id, quantity=1)
         db.session.add(new_cart_item)
         db.session.commit()
@@ -322,19 +322,19 @@ def modify_product(id):
     return render_template('modify_product.html', form=form, product=product)
 
 
-# Creating a route to view all products in the cart: wishlist
+# Creating a route to view all products in the wishList: wishlist
 @app.route('/wishlist' ,methods=['GET'])
-def cart():
-    # Logic for displaying the cart if authenticated
+def wishList():
+    # Logic for displaying the wishList if authenticated
     if not current_user.is_authenticated:
         flash("You need to login first", "danger")
         return redirect(url_for('login'))
     
-    # getting all the products in the cart by user_id
+    # getting all the products in the wishList by user_id
     cart_items = Wishlist.query.filter_by(user_id=current_user.id).all()
     
-    # return the cart page
-    return render_template('shoppingcart.html', cart_items = cart_items)
+    # return the wishList page
+    return render_template('wishlist.html', cart_items = cart_items)
 
 
 
@@ -347,12 +347,12 @@ def update_cart_item(id):
         return redirect(url_for('login'))
 
     try:
-        # Retrieve the cart item by ID and ensure it belongs to the current user
+        # Retrieve the wishList item by ID and ensure it belongs to the current user
         cart_item = Wishlist.query.filter_by(id=id, user_id=current_user.id).first()
 
         if not cart_item:
             flash("Wishlist item not found.", "danger")
-            return redirect(url_for('cart'))
+            return redirect(url_for('wishList'))
 
         # Get the new quantity from the form
         new_quantity = int(request.form.get('quantity', 1))  # Default to 1 if missing
@@ -360,7 +360,7 @@ def update_cart_item(id):
         if new_quantity < 1:
             flash("Quantity must be at least 1.", "warning")
         else:
-            # Update the cart item quantity
+            # Update the wishList item quantity
             cart_item.quantity = new_quantity
             db.session.commit()
             flash(f"Updated quantity for {cart_item.product.name} to {new_quantity}.", "success")
@@ -369,10 +369,10 @@ def update_cart_item(id):
         flash("Invalid quantity. Please enter a valid number.", "danger")
     except Exception as e:
         db.session.rollback()
-        flash("An error occurred while updating the cart.", "danger")
+        flash("An error occurred while updating the wishList.", "danger")
 
-    # Redirect back to the cart page
-    return redirect(url_for('cart'))
+    # Redirect back to the wishList page
+    return redirect(url_for('wishList'))
 
 
 @app.route('/delete_wishlist_item/<int:id>', methods=['POST', 'GET'])  # Allow POST for better practice
@@ -381,20 +381,20 @@ def delete_cart_item(id):
         # Attempt to find the item
         cart_item = Wishlist.query.filter_by(id=id).first()
         if not cart_item:
-            flash("Item not found in the cart.", "warning")
-            return redirect(url_for('cart'))
+            flash("Item not found in the wishList.", "warning")
+            return redirect(url_for('wishList'))
 
         # Delete the item
         db.session.delete(cart_item)
         db.session.commit()
-        flash("Item removed from cart successfully.", "success")
+        flash("Item removed from wishList successfully.", "success")
 
     except Exception as e:
-        app.logger.error(f"Error deleting cart item: {e}")
+        app.logger.error(f"Error deleting wishList item: {e}")
         db.session.rollback()
-        flash("An error occurred while removing the item from the cart.", "danger")
+        flash("An error occurred while removing the item from the wishList.", "danger")
 
-    return redirect(url_for('cart'))
+    return redirect(url_for('wishList'))
 
 
 # Creating a route to contact us
