@@ -1,36 +1,19 @@
 from datetime import date
 from hashlib import md5
-from flask import Flask, abort, render_template, redirect, url_for, flash, request,current_app, session
+from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename # Secure filename
-from flask_sqlalchemy import SQLAlchemy, pagination
-from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, ForeignKey
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import  DeclarativeBase
+from sqlalchemy import ForeignKey
 from functools import wraps
 import os
 from dotenv import load_dotenv
 from smtplib import SMTP
 # importing forms from forms.py
 from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, ContactForm
-import hmac
-import hashlib
-import uuid
-import base64
-import json
-
-# Generating a unique transaction Signature
-def genSha256(key, message):
-    key = key.encode('utf-8')
-    message = message.encode('utf-8')
-    hmac_sha256 = hmac.new(key, message, hashlib.sha256)
-    digest = hmac_sha256.digest()
-    #Convert the digest to a Base64-encoded string
-    signature = base64.b64encode(digest).decode('utf-8')
-    return signature
-
 
 
 # Load environment variables
@@ -45,11 +28,6 @@ MY_PASSWORD = os.getenv("EMAIL_PASSWORD")
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "this-is-a-secret-key")
 
-
-# Configure upload folder
-UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'assets', 'uploads')  # Define upload folder
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Create upload folder if it doesn't exist
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # create a new bootstrap object
 Bootstrap5(app)
@@ -97,8 +75,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    cart = db.relationship('Cart', back_populates='user') # Add cart 
-    orders = db.relationship('Order', back_populates='user') # Add order relationship
+    cart = db.relationship('Wishlist', back_populates='user') # Add cart 
     delivery_address = db.relationship('DeliveryAddress', back_populates='user') # Add delivery address relationship
 
 # Creating a product class
@@ -110,12 +87,11 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
-    orders = db.relationship('Order', back_populates='product')
-    cart = db.relationship('Cart', back_populates='product') # Add cart relationship
+    cart = db.relationship('Wishlist', back_populates='product') # Add cart relationship
 
 
 # creating a cart class
-class Cart(db.Model):
+class Wishlist(db.Model):
     __tablename__ = 'cart'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
@@ -124,19 +100,6 @@ class Cart(db.Model):
     user = db.relationship('User', back_populates='cart') # Add user relationship
     product = db.relationship('Product', back_populates='cart') # Add product relationship
 
-# creating a order class
-class Order(db.Model):
-    __tablename__ = 'order'
-    id = db.Column(db.Integer, primary_key=True)    
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False) # Foreign key to user
-    order_uuid = db.Column(db.String(100), nullable=False, unique=True) # Unique order identifier
-    product_id = db.Column(db.Integer, ForeignKey('product.id'), nullable=False) # Foreign key to product
-    order_date = db.Column(db.Date, nullable=False, default=date.today()) # Default to today's date
-    is_delivered = db.Column(db.Boolean, nullable=False, default=False) # Default to False
-    delivery_address = db.Column(db.String(100), nullable=False) # Address for delivery
-    quantity = db.Column(db.Integer, nullable=False) # Quantity of product ordered
-    user = db.relationship('User', back_populates='orders') # Add user relationship
-    product = db.relationship('Product', back_populates='orders') # Add product relationship
 
 # creating a delivery address class
 class DeliveryAddress(db.Model):
@@ -236,11 +199,7 @@ def add_product():
 
          # Save uploaded file
         file = form.image_url.data
-        file_name = file.filename  # Get file name
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
-        file.save(file_path)
-
-        uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
+        uploaded_image = file # img url
         
 
         
@@ -279,37 +238,33 @@ def products():
 def product_details(id):
     # Retrieve the product by ID
     product = Product.query.get_or_404(id)
+    #  render the product details page
+    return render_template('product_details.html', product=product)
 
-    # Render the form for adding quantity to cart
-    form = QuantityForm()
+# creating a route to add product to cart
+@app.route('/add_to_wishlist/<int:id>')
+def add_to_wishlist(id):
+    # Ensure the user is authenticated
+    if not current_user.is_authenticated:
+        flash("You need to log in first to add items to the wishlist.", "danger")
+        return redirect(url_for('login'))
 
-    if form.validate_on_submit():
-        quantity = form.quantity.data
+    # Check if the user already has the product in their cart
+    cart_item = Wishlist.query.filter_by(user_id=current_user.id, product_id=id).first()
+    if cart_item:
+        # Update the quantity of the existing cart item
+        cart_item.quantity += 1
+        db.session.commit()
+        flash(f"Added '{cart_item.product.name}' to your wishlist.", "success")
 
-        # Ensure the user is authenticated
-        if not current_user.is_authenticated:
-            flash("You need to log in first to add items to the cart.", "danger")
-            return redirect(url_for('login'))
+    else:
+        # Add a new cart item for the user
+        new_cart_item = Wishlist(user_id=current_user.id, product_id=id, quantity=1)
+        db.session.add(new_cart_item)
+        db.session.commit()
+        flash(f"Added '{new_cart_item.product.name}' to your wishlist successfully.", "success")
 
-        # Check if the user already has the product in their cart
-        cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=id).first()
-        if cart_item:
-            # Update the quantity of the existing cart item
-            cart_item.quantity += quantity
-            db.session.commit()
-            flash(f"Added {quantity} more of '{product.name}' to your cart.", "success")
-
-        else:
-            # Add a new cart item for the user
-            new_cart_item = Cart(user_id=current_user.id, product_id=id, quantity=quantity)
-            db.session.add(new_cart_item)
-            db.session.commit()
-            flash(f"Added '{product.name}' to your cart successfully.", "success")
-
-        # Redirect to the same product details page to prevent resubmission
-        return redirect(url_for('product_details', id=id))
-
-    return render_template('product_details.html', product=product, form=form)
+    return redirect(url_for('product_details', id = id)) # rediricting the url to the wishlist page
 
 # creating a route to delete a product
 @app.route('/delete-product/<int:id>')
@@ -328,6 +283,7 @@ def delete_product(id):
     return redirect(url_for('products_category'))
 
 
+# Creating a route to modify a product
 
 @app.route('/modify-product/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -346,13 +302,11 @@ def modify_product(id):
         product.price = form.price.data
         product.description = form.description.data
         # Save uploaded file
-        file = form.image_url.data
-        file_name = file.filename  # Get file name
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
-        file.save(file_path)
+        file_name = form.image_url.data
 
-        uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
-        product.image_url = uploaded_image
+
+        # uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
+        product.image_url = file_name
         try:
             db.session.commit()
             flash(f"Product '{product.name}' updated successfully.", "success")
@@ -364,12 +318,12 @@ def modify_product(id):
             flash(f"An error occurred while updating the product: {product.name}", "danger")
             db.session.rollback()
 
-    
+    # Render the modify product page
     return render_template('modify_product.html', form=form, product=product)
 
 
-# Creating a route to view all products in the cart
-@app.route('/cart' ,methods=['GET'])
+# Creating a route to view all products in the cart: wishlist
+@app.route('/wishlist' ,methods=['GET'])
 def cart():
     # Logic for displaying the cart if authenticated
     if not current_user.is_authenticated:
@@ -377,88 +331,16 @@ def cart():
         return redirect(url_for('login'))
     
     # getting all the products in the cart by user_id
-    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
-    
-    # calculate the total quantity of the products in the cart
-    total_quantity = sum([item.quantity for item in cart_items])
-
-    # calculate the total price of the products in the cart
-    total_price = sum([item.product.price * item.quantity for item in cart_items])
-        # generate a unique transaction id
-    uuid_val = uuid.uuid4()
-    # Example usage:
-    secret_key = "8gBm/:&EnhH.1/q"
-    data_to_sign = f"total_amount={total_price},transaction_uuid={uuid_val},product_code=EPAYTEST"
-    result = genSha256(secret_key, data_to_sign)
-
-    # creating a context dictionary
-    context = {
-        'cart_items': cart_items,
-        'total_price': total_price,
-        'total_quantity': total_quantity,
-        'uuid': uuid_val,
-        'signature': result
-    }
-
-
-    
-    # Handling the form submission
-    if request.method == 'GET':
-        data = request.args.get('data')
-        if data:
-            decoded_data = base64.b64decode(data).decode('utf-8')
-            print(decoded_data)
-            map_data = json.loads(decoded_data)
-
-            # get the transaction status
-            if map_data['status'] == 'COMPLETE':
-                flash("Transaction successful", "success")
-
-                # Create an order for each cart item
-                for item in cart_items:
-                    new_order = Order(
-                        user_id=current_user.id,
-                        order_uuid=str(uuid_val),
-                        product_id=item.product_id,
-                        quantity=item.quantity,
-                        delivery_address=current_user.address
-                    )
-                    db.session.add(new_order) # Add the order to the session
-                    db.session.delete(item) # Remove the item from the cart
-                    db.session.commit()
-
-                    return redirect(url_for('orders'))
-
-            else:
-                flash("Transaction failed", "danger")
-
-
-            print(map_data)
-    
-
+    cart_items = Wishlist.query.filter_by(user_id=current_user.id).all()
     
     # return the cart page
-    return render_template('shoppingcart.html', cart_items = cart_items, total_price=total_price, total_quantity=total_quantity , context=context)
+    return render_template('shoppingcart.html', cart_items = cart_items)
 
 
-# Creating a new route for the orders
-@app.route('/orders')
-def orders():
-    # Logic for displaying the orders if authenticated
-    if not current_user.is_authenticated:
-        flash("You need to login first", "danger")
-        return redirect(url_for('login'))
-    
-    # getting all the orders by user_id
-    orders = Order.query.filter_by(user_id=current_user.id).all()
-    
-    
-    # return the orders page
-    return render_template('orders.html', orders=orders)
 
 
-# Creating a route to update the quantity of a cart item
-@app.route('/update_cart_item/<int:id>', methods=['POST'])
+# Creating a route to update the quantity of a wishlist item
+@app.route('/update_wishlist_item/<int:id>', methods=['POST'])
 def update_cart_item(id):
     if not current_user.is_authenticated:
         flash("You need to log in first", "danger")
@@ -466,10 +348,10 @@ def update_cart_item(id):
 
     try:
         # Retrieve the cart item by ID and ensure it belongs to the current user
-        cart_item = Cart.query.filter_by(id=id, user_id=current_user.id).first()
+        cart_item = Wishlist.query.filter_by(id=id, user_id=current_user.id).first()
 
         if not cart_item:
-            flash("Cart item not found.", "danger")
+            flash("Wishlist item not found.", "danger")
             return redirect(url_for('cart'))
 
         # Get the new quantity from the form
@@ -493,11 +375,11 @@ def update_cart_item(id):
     return redirect(url_for('cart'))
 
 
-@app.route('/delete_cart_item/<int:id>', methods=['POST', 'GET'])  # Allow POST for better practice
+@app.route('/delete_wishlist_item/<int:id>', methods=['POST', 'GET'])  # Allow POST for better practice
 def delete_cart_item(id):
     try:
         # Attempt to find the item
-        cart_item = Cart.query.filter_by(id=id).first()
+        cart_item = Wishlist.query.filter_by(id=id).first()
         if not cart_item:
             flash("Item not found in the cart.", "warning")
             return redirect(url_for('cart'))
@@ -549,33 +431,8 @@ def contact_us():
 
 
 
-# # Code to convert base64encoded string:
-# decoded_data = base64.b64decode(data).decode('utf-8')
-# print(decoded_data)
-# map_data = json.loads(decoded_data)
 
-# url for the checkout page
-# @app.route('/checkout', methods=['GET', 'POST'])
-# def checkout():
-#     # Logic for displaying the cart if authenticated
-#     if not current_user.is_authenticated:
-#         flash("You need to login first", "danger")
-#         return redirect(url_for('login'))
-    
-#     # getting all the products in the cart by user_id
-#     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
-    
-#     # calculate the total quantity of the products in the cart
-#     total_quantity = sum([item.quantity for item in cart_items])
-
-#     # calculate the total price of the products in the cart
-#     total_price = sum([item.product.price * item.quantity for item in cart_items])
-
-
-#     # return the checkout page
-#     return render_template('checkout.html', context=context)
-
-# runnning the app
+# running the app
 if __name__ == "__main__":
     app.run(debug=True, port=5500)
 
