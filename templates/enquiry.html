@@ -1,0 +1,182 @@
+{% from "bootstrap5/form.html" import render_form %} {% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+  <h3
+    class="subheading py-3"
+    style="border-left: 4px solid rgba(0, 45, 33, 0.9); padding-left: 2rem"
+  >
+    Product Enquiry
+  </h3>
+  <hr />
+
+  <!-- New Section to display the the produt for enquiry -->
+  <div class="flex-grow-1 mb-3">
+    <div class="card border-0 shadow-sm order-card">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <!-- Product Details (Left Side) -->
+        <div class="order-title" style="flex: 1; padding-right: 1rem">
+          <h4
+            class="card-title body-text mb-2"
+            style="
+              font-size: 1.3rem;
+              color: rgba(0, 45, 33, 0.9);
+              font-weight: 600;
+            "
+          >
+            {{ product.name }}
+          </h4>
+          <p class="text-muted mb-2" style="font-size: 1rem">
+            Category: <strong>{{ product.category }} Series</strong>
+          </p>
+        </div>
+
+        <!-- Product Image (Right Side) -->
+        <div class="text-center" style="flex: 0 0 150px">
+          <img
+            src="{{ product.image_url }}"
+            alt="{{ product.name }}"
+            class="img-fluid rounded"
+            style="max-height: 150px; object-fit: cover"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Message Section -->
+  <div class="col-12 text-center">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="alert-container">
+      {% for category, message in messages %}
+      <div
+        class="alert alert-{{ category }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+  </div>
+
+  <!-- Contact Form and Order Summary -->
+  <div class="row">
+    <!-- Contact Form Section -->
+    <div class="col-md-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body py-5">
+          <h5
+            class="subheading text-center mb-3"
+            style="color: rgba(0, 45, 33, 0.9); font-weight: bold"
+          >
+            ENQUIRY Form
+          </h5>
+
+          <hr style="padding: 0 2rem; color: rgba(0, 45, 33, 0.9)" />
+
+          <div
+            class="form-container secheading pt-3"
+            style="
+              font-weight: bold;
+              font-size: 1rem;
+              color: rgba(0, 45, 33, 0.9);
+              padding: 0 2rem;
+            "
+          >
+            <!-- Rendering the form -->
+            {{ render_form(form, novalidate=True) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information Section -->
+    <div class="col-md-5">
+      <div
+        class="card border-0 shadow-sm"
+        style="background-color: #f9fafb; border-radius: 12px"
+      >
+        <div class="card-body">
+          <p
+            class="text-center body-text"
+            style="font-size: 1rem; color: #ff6347"
+          >
+            Need help or have questions? <strong>Contact us now!</strong>
+          </p>
+
+          <hr />
+
+          <!-- Contact Information -->
+          <h4
+            class="card-title subheading mb-2"
+            style="
+              color: rgba(0, 45, 33, 0.9);
+              border-color: rgba(0, 45, 33, 0.9);
+              font-weight: 600;
+              border-left: 4px solid rgba(0, 45, 33, 0.9);
+              padding-left: 1.5rem;
+            "
+          >
+            WhatsApp Us
+          </h4>
+          <ul class="list-unstyled pt-3">
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500">
+                <strong>: </strong>+977-9855063147</span
+              >
+              <a
+                href="https://wa.me/+9779855063147"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500">
+                <strong>: </strong>+977-9845807018</span
+              >
+              <a
+                href="https://wa.me/+9779845807018"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500"
+                ><strong>: </strong>+977-9840305547</span
+              >
+              <a
+                href="https://wa.me/+9779840305547"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500"
+                ><strong>: </strong>+977-9845698361</span
+              >
+              <a
+                href="https://wa.me/+9779845698361"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+          </ul>
+
+          <hr />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
