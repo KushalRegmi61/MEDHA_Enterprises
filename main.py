@@ -6,7 +6,7 @@ from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import  DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import ForeignKey
 from functools import wraps
 import os
@@ -39,26 +39,34 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 # # Load user
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
 
 # # Create a decorator to check if a user is an admin
+
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated and not current_user.id== 1:
+        if not current_user.is_authenticated and not current_user.id == 1:
             abort(403)  # Forbidden access
         return f(*args, **kwargs)
     return decorated_function
 
 # creating a declearative base
+
+
 class Base(DeclarativeBase):
     pass
 
 # connect to the database
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL", "sqlite:///shop.db")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    "DB_URL", "sqlite:///shop.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # creating the database
@@ -75,10 +83,15 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    wishList = db.relationship('Wishlist', back_populates='user') # Add wishList 
-    delivery_address = db.relationship('DeliveryAddress', back_populates='user') # Add delivery address relationship
+    wishList = db.relationship(
+        'Wishlist', back_populates='user')  # Add wishList
+    # Add delivery address relationship
+    delivery_address = db.relationship(
+        'DeliveryAddress', back_populates='user')
 
 # Creating a product class
+
+
 class Product(db.Model):
     __tablename__ = 'product'
     id = db.Column(db.Integer, primary_key=True)
@@ -87,7 +100,8 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
-    wishList = db.relationship('Wishlist', back_populates='product') # Add wishList relationship
+    # Add wishList relationship
+    wishList = db.relationship('Wishlist', back_populates='product')
 
 
 # creating a wishList class
@@ -95,10 +109,13 @@ class Wishlist(db.Model):
     __tablename__ = 'wishList'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
-    product_id = db.Column(db.Integer, ForeignKey('product.id'), nullable=False)
+    product_id = db.Column(db.Integer, ForeignKey(
+        'product.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    user = db.relationship('User', back_populates='wishList') # Add user relationship
-    product = db.relationship('Product', back_populates='wishList') # Add product relationship
+    # Add user relationship
+    user = db.relationship('User', back_populates='wishList')
+    # Add product relationship
+    product = db.relationship('Product', back_populates='wishList')
 
 
 # creating a delivery address class
@@ -108,7 +125,9 @@ class DeliveryAddress(db.Model):
     user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    user = db.relationship('User', back_populates='delivery_address') # Add user relationship
+    # Add user relationship
+    user = db.relationship('User', back_populates='delivery_address')
+
 
 # Initializing the database
 with app.app_context():
@@ -133,25 +152,27 @@ def register():
 
         new_user = User(
             email=email,
-            password=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8),
+            password=generate_password_hash(
+                form.password.data, method='pbkdf2:sha256', salt_length=8),
             name=name,
             address=address,
             phone_number=phone_number
         )
-        #check if the user already exists
+        # check if the user already exists
         user = db.session.query(User).filter_by(email=email).first()
         if user:
             flash("User already exists! Try login", "danger")
             return redirect(url_for('login'))
-        
-        #add the user to the database
+
+        # add the user to the database
         try:
             db.session.add(new_user)
             db.session.commit()
             flash(f"{new_user.name} registered successfully!", "success")
             return redirect(url_for('login'))
         except Exception as e:
-            flash(f"An error occurred while registering the user. {e}", "danger")
+            flash(f"An error occurred while registering the user. {
+                  e}", "danger")
             db.session.rollback()
             return redirect(url_for('register'))
 
@@ -187,6 +208,8 @@ def logout():
     return redirect(url_for('home'))
 
 # creating a route for adding a new product
+
+
 @app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     form = AddProductForm()
@@ -196,37 +219,40 @@ def add_product():
         price = float(form.price.data)
         description = form.description.data
 
-
-         # Save uploaded file
+        # Save uploaded file
         file = form.image_url.data
-        uploaded_image = file # img url
-        
+        uploaded_image = file  # img url
 
-        
         # Create and add the new product to the database
-        new_product = Product(name=name, category=category, price=price, description=description, image_url=uploaded_image)
+        new_product = Product(name=name, category=category, price=price,
+                              description=description, image_url=uploaded_image)
         db.session.add(new_product)
         db.session.commit()
-        
+
         flash("Product added successfully.", 'success')
         return redirect(url_for('home'))
     return render_template('addnewproduct.html', form=form)
 
 # Creating a route to view all products category
+
+
 @app.route('/products_category')
 def products_category():
     products_category = db.session.query(Product.category).distinct().all()
-    products_category = [product[0] for product in products_category]  # Convert list of tuples to list of strings
-    
+    # Convert list of tuples to list of strings
+    products_category = [product[0] for product in products_category]
+
     category_images = {}
     for category in products_category:
         product = Product.query.filter_by(category=category).first()
-        category_images[category] = product.image_url  # Add category and image_url to dictionary
-
+        # Add category and image_url to dictionary
+        category_images[category] = product.image_url
 
     return render_template('products_category.html', category_images=category_images)
 
 # Creating a route to view all products in a category
+
+
 @app.route('/products')
 def products():
     category = (request.args.get('category')).title()
@@ -234,6 +260,8 @@ def products():
     return render_template('products.html', products=products, category=category)
 
 # Creating a route to view a single product
+
+
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):
     # Retrieve the product by ID
@@ -242,6 +270,8 @@ def product_details(id):
     return render_template('product_details.html', product=product)
 
 # creating a route to add product to wishList
+
+
 @app.route('/add_to_wishlist/<int:id>')
 def add_to_wishlist(id):
     # Ensure the user is authenticated
@@ -250,7 +280,8 @@ def add_to_wishlist(id):
         return redirect(url_for('login'))
 
     # Check if the user already has the product in their wishList
-    cart_item = Wishlist.query.filter_by(user_id=current_user.id, product_id=id).first()
+    cart_item = Wishlist.query.filter_by(
+        user_id=current_user.id, product_id=id).first()
     if cart_item:
         # Update the quantity of the existing wishList item
         cart_item.quantity += 1
@@ -259,14 +290,19 @@ def add_to_wishlist(id):
 
     else:
         # Add a new wishList item for the user
-        new_cart_item = Wishlist(user_id=current_user.id, product_id=id, quantity=1)
+        new_cart_item = Wishlist(
+            user_id=current_user.id, product_id=id, quantity=1)
         db.session.add(new_cart_item)
         db.session.commit()
-        flash(f"Added '{new_cart_item.product.name}' to your wishlist successfully.", "success")
+        flash(f"Added '{
+              new_cart_item.product.name}' to your wishlist successfully.", "success")
 
-    return redirect(url_for('product_details', id = id)) # rediricting the url to the wishlist page
+    # rediricting the url to the wishlist page
+    return redirect(url_for('product_details', id=id))
 
 # creating a route to delete a product
+
+
 @app.route('/delete-product/<int:id>')
 @login_required
 @admin_required
@@ -276,9 +312,10 @@ def delete_product(id):
         db.session.delete(product)
         db.session.commit()
         flash(f"Product '{product.name}' deleted successfully.", "success")
-        
+
     except Exception as e:
-        flash(f"An error occurred while deleting the product:  {product.name}", "danger")
+        flash(f"An error occurred while deleting the product:  {
+              product.name}", "danger")
         db.session.rollback()
     return redirect(url_for('products_category'))
 
@@ -295,7 +332,7 @@ def modify_product(id):
         category=product.category,
         price=product.price,
         description=product.description
-        )
+    )
     if form.validate_on_submit():
         product.name = form.name.data
         product.category = form.category.data
@@ -303,7 +340,6 @@ def modify_product(id):
         product.description = form.description.data
         # Save uploaded file
         file_name = form.image_url.data
-
 
         # uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
         product.image_url = file_name
@@ -315,7 +351,8 @@ def modify_product(id):
             return redirect(url_for('product_details', id=id))
 
         except Exception as e:
-            flash(f"An error occurred while updating the product: {product.name}", "danger")
+            flash(f"An error occurred while updating the product: {
+                  product.name}", "danger")
             db.session.rollback()
 
     # Render the modify product page
@@ -323,20 +360,18 @@ def modify_product(id):
 
 
 # Creating a route to view all products in the wishList: wishlist
-@app.route('/wishlist' ,methods=['GET'])
+@app.route('/wishlist', methods=['GET'])
 def wishList():
     # Logic for displaying the wishList if authenticated
     if not current_user.is_authenticated:
         flash("You need to login first", "danger")
         return redirect(url_for('login'))
-    
+
     # getting all the products in the wishList by user_id
     cart_items = Wishlist.query.filter_by(user_id=current_user.id).all()
-    
+
     # return the wishList page
-    return render_template('wishlist.html', cart_items = cart_items)
-
-
+    return render_template('wishlist.html', cart_items=cart_items)
 
 
 # Creating a route to update the quantity of a wishlist item
@@ -348,14 +383,16 @@ def update_cart_item(id):
 
     try:
         # Retrieve the wishList item by ID and ensure it belongs to the current user
-        cart_item = Wishlist.query.filter_by(id=id, user_id=current_user.id).first()
+        cart_item = Wishlist.query.filter_by(
+            id=id, user_id=current_user.id).first()
 
         if not cart_item:
             flash("Wishlist item not found.", "danger")
             return redirect(url_for('wishList'))
 
         # Get the new quantity from the form
-        new_quantity = int(request.form.get('quantity', 1))  # Default to 1 if missing
+        new_quantity = int(request.form.get('quantity', 1)
+                           )  # Default to 1 if missing
 
         if new_quantity < 1:
             flash("Quantity must be at least 1.", "warning")
@@ -363,7 +400,8 @@ def update_cart_item(id):
             # Update the wishList item quantity
             cart_item.quantity = new_quantity
             db.session.commit()
-            flash(f"Updated quantity for {cart_item.product.name} to {new_quantity}.", "success")
+            flash(f"Updated quantity for {cart_item.product.name} to {
+                  new_quantity}.", "success")
 
     except ValueError:
         flash("Invalid quantity. Please enter a valid number.", "danger")
@@ -375,7 +413,8 @@ def update_cart_item(id):
     return redirect(url_for('wishList'))
 
 
-@app.route('/delete_wishlist_item/<int:id>', methods=['POST', 'GET'])  # Allow POST for better practice
+# Allow POST for better practice
+@app.route('/delete_wishlist_item/<int:id>', methods=['POST', 'GET'])
 def delete_cart_item(id):
     try:
         # Attempt to find the item
@@ -415,12 +454,13 @@ def contact_us():
                 connection.sendmail(
                     from_addr=MY_EMAIL,
                     to_addrs='kushalbro82@gmail.com',
-                    msg=f"Subject:{subject}\n\nName: {name}\nEmail: {email}\nMessage: {message}"
+                    msg=f"Subject:{subject}\n\nName: {
+                        name}\nEmail: {email}\nMessage: {message}"
                 )
             flash("Message sent successfully.", "success")
 
             return redirect(url_for('home'))
-        
+
         except Exception as e:
             app.logger.error(f"Error sending email: {e}")
             flash("An error occurred while sending the message.", "danger")
@@ -428,13 +468,6 @@ def contact_us():
     return render_template('contact_us.html', form=form)
 
 
-
-
-
-
 # running the app
 if __name__ == "__main__":
     app.run(debug=True, port=5500)
-
-
-
