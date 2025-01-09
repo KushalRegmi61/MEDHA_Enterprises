@@ -203,7 +203,7 @@
               color: rgba(0, 45, 33, 0.9);
               font-weight: 600;
               border-left: 4px solid rgba(0, 45, 33, 0.9);
-              padding-left: 2rem;
+              padding-left: 1.3rem;
             "
           >
             Contact Us
@@ -259,7 +259,11 @@
 
           <!-- Enquiry Button -->
           <div class="d-flex justify-content-start">
-            <a href="" class="btn btn-success btn-lg" style="font-size: 0.9rem">
+            <a
+              href="{{url_for('contact_us')}}"
+              class="btn btn-success btn-lg"
+              style="font-size: 0.9rem"
+            >
               <i class="fas fa-envelope"></i> Email_US
             </a>
           </div>
