@@ -1,35 +1,155 @@
-{% from "bootstrap5/form.html" import render_form %}
-{% extends "base.html" %}
-
-{% block title %}Contact US{% endblock %}
-
+{% from "bootstrap5/form.html" import render_form %} {% extends "base.html" %}
 {% block content %}
+<div class="container my-5">
+  <h3
+    class="subheading py-3"
+    style="border-left: 4px solid rgba(0, 45, 33, 0.9); padding-left: 2rem"
+  >
+    Contact Us
+  </h3>
+  <p
+    class="body-text mb-4"
+    style="font-size: 1rem; color: rgba(0, 45, 33, 0.9); font-weight: bold"
+  >
+    <strong>: </strong>Your first step to building your dream home.
+  </p>
 
-<!-- Contact Us Page Content -->
- 
+  <hr />
 
-<main class="py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <!-- Contact Us Form Card -->
-            <div class="col-lg-8 col-md-10">
-                <div class="card shadow-lg border-0" style="border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #002d25, #004d3d);">
-                    <!-- Card Header Section -->
-                    <div class="card-header text-center py-4">
-                        <h3 class="subheading pt-3" style="color: #d8b4fe;">Contact Us</h3>
-                        <p class="body-text text-white text-center mt-4">"We'd love to hear from you! Reach out to us with any questions or feedback."</p>
-                    </div>
-                    
-                    <!-- Card Body -->
-                    <div class="card-body p-5">
-                        <div class="form-container secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
-                            <!-- Rendering the form -->
-                            {{ render_form(form, novalidate=True) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Flash Message Section -->
+  <div class="col-12 text-center">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="alert-container">
+      {% for category, message in messages %}
+      <div
+        class="alert alert-{{ category }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %}
     </div>
-</main>
+    {% endif %} {% endwith %}
+  </div>
+
+  <!-- Contact Form and Order Summary -->
+  <div class="row">
+    <!-- Contact Form Section -->
+    <div class="col-md-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body py-5">
+          <h5
+            class="subheading text-center mb-3"
+            style="color: rgba(0, 45, 33, 0.9); font-weight: bold"
+          >
+            Contact Form
+          </h5>
+
+          <hr style="padding: 0 2rem; color: rgba(0, 45, 33, 0.9)" />
+
+          <div
+            class="form-container secheading pt-3"
+            style="
+              font-weight: bold;
+              font-size: 1rem;
+              color: rgba(0, 45, 33, 0.9);
+              padding: 0 2rem;
+            "
+          >
+            <!-- Rendering the form -->
+            {{ render_form(form, novalidate=True) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information Section -->
+    <div class="col-md-5">
+      <div
+        class="card border-0 shadow-sm"
+        style="background-color: #f9fafb; border-radius: 12px"
+      >
+        <div class="card-body">
+          <p
+            class="text-center body-text"
+            style="font-size: 1rem; color: #ff6347"
+          >
+            Need help or have questions? <strong>Contact us now!</strong>
+          </p>
+
+          <hr />
+
+          <!-- Contact Information -->
+          <h4
+            class="card-title subheading mb-2"
+            style="
+              color: rgba(0, 45, 33, 0.9);
+              border-color: rgba(0, 45, 33, 0.9);
+              font-weight: 600;
+              border-left: 4px solid rgba(0, 45, 33, 0.9);
+              padding-left: 1.5rem;
+            "
+          >
+            WhatsApp Us
+          </h4>
+          <ul class="list-unstyled pt-3">
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500">
+                <strong>: </strong>+977-9855063147</span
+              >
+              <a
+                href="https://wa.me/+9779855063147"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500">
+                <strong>: </strong>+977-9845807018</span
+              >
+              <a
+                href="https://wa.me/+9779845807018"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500"
+                ><strong>: </strong>+977-9840305547</span
+              >
+              <a
+                href="https://wa.me/+9779840305547"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+            <li class="d-flex justify-content-between align-items-center mb-3">
+              <span style="font-size: 1rem; font-weight: 500"
+                ><strong>: </strong>+977-9845698361</span
+              >
+              <a
+                href="https://wa.me/+9779845698361"
+                class="btn btn-outline-success btn-sm"
+              >
+                <i class="fab fa-whatsapp"></i> Chat Now
+              </a>
+            </li>
+          </ul>
+
+          <hr />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
