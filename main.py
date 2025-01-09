@@ -467,6 +467,13 @@ def contact_us():
 
     return render_template('contact_us.html', form=form)
 
+# about us route
+
+
+@app.route('/about')
+def about():
+    return render_template('about_us.html')
+
 
 # running the app
 if __name__ == "__main__":
