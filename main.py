@@ -274,6 +274,8 @@ def product_details(id):
 
 @app.route('/add_to_wishlist/<int:id>')
 def add_to_wishlist(id):
+    is_enquire = request.args.get('is_enquire')
+
     # Ensure the user is authenticated
     if not current_user.is_authenticated:
         flash("You need to log in first to add items to the wishlist.", "danger")
@@ -297,6 +299,8 @@ def add_to_wishlist(id):
         flash(f"Added '{
               new_cart_item.product.name}' to your wishlist successfully.", "success")
 
+    if is_enquire:
+        return redirect(url_for('wishList'))
     # rediricting the url to the wishlist page
     return redirect(url_for('product_details', id=id))
 
