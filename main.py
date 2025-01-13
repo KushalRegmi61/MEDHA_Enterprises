@@ -193,8 +193,8 @@ def register():
             flash(f"{new_user.name} registered successfully!", "success")
             return redirect(url_for('login'))
         except Exception as e:
-            flash(f"An error occurred while registering the user. {
-                  e}", "danger")
+
+            flash(f"Error occurred While Registering New User:{e}", "danger")
             db.session.rollback()
             return redirect(url_for('register'))
 
