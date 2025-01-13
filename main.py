@@ -13,7 +13,7 @@ import os
 from dotenv import load_dotenv
 from smtplib import SMTP
 # importing forms from forms.py
-from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, ContactForm
+from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, ContactForm, ProductEnquiryForm
 
 
 # Load environment variables
@@ -88,6 +88,10 @@ class User(UserMixin, db.Model):
     # Add delivery address relationship
     delivery_address = db.relationship(
         'DeliveryAddress', back_populates='user')
+    # Add product enquiry relationship
+    product_enquiry = db.relationship(
+        'ProductEnquiry', back_populates='user')
+
 
 # Creating a product class
 
@@ -102,6 +106,9 @@ class Product(db.Model):
     image_url = db.Column(db.String(100), nullable=False)
     # Add wishList relationship
     wishList = db.relationship('Wishlist', back_populates='product')
+    # Add product enquiry relationship
+    product_enquiry = db.relationship(
+        'ProductEnquiry', back_populates='product')
 
 
 # creating a wishList class
@@ -117,8 +124,23 @@ class Wishlist(db.Model):
     # Add product relationship
     product = db.relationship('Product', back_populates='wishList')
 
+# creating a product_enquiry class
+
+
+class ProductEnquiry(db.Model):
+    __tablename__ = 'product_enquiry'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    product_id = db.Column(db.Integer, ForeignKey(
+        'product.id'), nullable=False)
+    # Add user relationship
+    user = db.relationship('User', back_populates='product_enquiry')
+    product = db.relationship(
+        'Product', back_populates='product_enquiry')  # Add product
 
 # creating a delivery address class
+
+
 class DeliveryAddress(db.Model):
     __tablename__ = 'delivery_address'
     id = db.Column(db.Integer, primary_key=True)
@@ -477,6 +499,42 @@ def contact_us():
 @app.route('/about')
 def about():
     return render_template('about_us.html')
+
+# route for enquiry form
+
+
+@app.route('/enquiry', methods=['GET', 'POST'])
+def enquiry():
+    product_id = request.args.get('product_id')  # Get product ID from URL
+
+    product = Product.query.get(product_id)  # Get product by ID
+
+    form = ProductEnquiryForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        phone_number = form.phone_number.data
+        message = form.message.data
+
+        # Send email
+        try:
+            with SMTP("smtp.gmail.com") as connection:
+                connection.starttls()  # Secure the connection
+                connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+                connection.sendmail(
+                    from_addr=MY_EMAIL,
+                    to_addrs='kushalbro82@gmail.com',
+                    msg=f"Subject:Product Enquiry\n\nName: {name}\nProduct Name: {product.name}\nEmail: {
+                        email}\nPhone Number: {phone_number}\nMessage: {message}"
+                )
+            flash("Enquiry sent successfully.", "success")
+            return redirect(url_for('home'))
+
+        except Exception as e:
+            app.logger.error(f"Error sending enquiry email: {e}")
+            flash("An error occurred while sending the enquiry.", "danger")
+
+    return render_template('enquiry.html', form=form, product=product)
 
 
 # running the app
