@@ -423,8 +423,7 @@ def update_cart_item(id):
             # Update the wishList item quantity
             cart_item.quantity = new_quantity
             db.session.commit()
-            flash(f"Updated quantity for {cart_item.product.name} to {
-                  new_quantity}.", "success")
+            flash(f"Updated quantity for {cart_item.product.name} to {new_quantity}.", "success")
 
     except ValueError:
         flash("Invalid quantity. Please enter a valid number.", "danger")
