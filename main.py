@@ -318,8 +318,7 @@ def add_to_wishlist(id):
             user_id=current_user.id, product_id=id, quantity=1)
         db.session.add(new_cart_item)
         db.session.commit()
-        flash(f"Added '{
-              new_cart_item.product.name}' to your wishlist successfully.", "success")
+        flash(f"Added '{new_cart_item.product.name}' to your wishlist successfully.", "success")
 
     if is_enquire:
         return redirect(url_for('wishList'))
@@ -340,8 +339,7 @@ def delete_product(id):
         flash(f"Product '{product.name}' deleted successfully.", "success")
 
     except Exception as e:
-        flash(f"An error occurred while deleting the product:  {
-              product.name}", "danger")
+        flash(f"An error occurred while deleting the product:{product.name}", "danger")
         db.session.rollback()
     return redirect(url_for('products_category'))
 
@@ -377,8 +375,7 @@ def modify_product(id):
             return redirect(url_for('product_details', id=id))
 
         except Exception as e:
-            flash(f"An error occurred while updating the product: {
-                  product.name}", "danger")
+            flash(f"An error occurred while updating the product: {product.name}", "danger")
             db.session.rollback()
 
     # Render the modify product page
