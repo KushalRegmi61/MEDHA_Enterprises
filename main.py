@@ -468,6 +468,7 @@ def contact_us():
         subject = form.subject.data
         message = form.message.data
 
+        msg = f"Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}"
         # Send email
         try:
             with SMTP("smtp.gmail.com") as connection:
@@ -476,8 +477,7 @@ def contact_us():
                 connection.sendmail(
                     from_addr=MY_EMAIL,
                     to_addrs='kushalbro82@gmail.com',
-                    msg=f"Subject:{subject}\n\nName: {
-                        name}\nEmail: {email}\nMessage: {message}"
+                    msg=msg
                 )
             flash("Message sent successfully.", "success")
 
@@ -512,6 +512,7 @@ def enquiry():
         phone_number = form.phone_number.data
         message = form.message.data
 
+        msg = f"Subject:Product Enquiry\n\nName: {name}\nEmail: {email}\nPhone Number: {phone_number}\nProduct Name: {product.name}\nMessage: {message}"
         # Send email
         try:
             with SMTP("smtp.gmail.com") as connection:
@@ -520,11 +521,10 @@ def enquiry():
                 connection.sendmail(
                     from_addr=MY_EMAIL,
                     to_addrs='kushalbro82@gmail.com',
-                    msg=f"Subject:Product Enquiry\n\nName: {name}\nProduct Name: {product.name}\nEmail: {
-                        email}\nPhone Number: {phone_number}\nMessage: {message}"
+                    msg=msg
                 )
             flash("Enquiry sent successfully.", "success")
-            return redirect(url_for('home'))
+            return redirect(url_for('product_details', id=product_id))
 
         except Exception as e:
             app.logger.error(f"Error sending enquiry email: {e}")
