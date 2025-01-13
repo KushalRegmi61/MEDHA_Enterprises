@@ -47,7 +47,7 @@
                 </a>
 
                 <!-- Buy Now Button -->
-                <a href="{{ url_for('add_to_wishlist', id=product.id, is_enquire=product.id) }}" class="btn btn-outline-success btn-lg">
+                <a href="{{ url_for('enquiry', product_id=product.id, is_enquire=product.id) }}" class="btn btn-outline-success btn-lg">
                     <i class="fas fa-info-circle"></i> Enquire Now
                 </a>
             </div>
