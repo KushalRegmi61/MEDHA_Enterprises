@@ -120,3 +120,16 @@ class ContactForm(FlaskForm):
     message = CKEditorField('Message', validators=[DataRequired()], render_kw={
                             "size": 30, "placeholder": "Enter message"})
     submit = SubmitField(label="Send Email", render_kw={"size": 30})
+
+
+# product enquiry form
+class ProductEnquiryForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()], render_kw={
+                       "size": 30, "placeholder": "Enter your name"})
+    email = StringField('Email', validators=[DataRequired(), Email()], render_kw={
+                        "size": 30, "placeholder": "Enter your email"})
+    phone_number = StringField('Phone Number', validators=[DataRequired()], render_kw={
+                               "size": 30, "placeholder": "Enter your phone number"})
+    message = CKEditorField('Message', validators=[DataRequired()], render_kw={
+                            "size": 30, "placeholder": "Enter message"})
+    submit = SubmitField(label="Send Enquiry", render_kw={"size": 30})
