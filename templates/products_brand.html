@@ -1,0 +1,57 @@
+{% extends "base.html" %} {% block content %}
+<div class="container my-5">
+  <h3
+    class="subheading py-3 text-start"
+    style="border-left: 4px solid rgba(0, 45, 33, 0.9); padding-left: 2rem"
+  >
+    Our Partner Brands
+  </h3>
+  <p
+    class="body-text mb-4"
+    style="font-size: 1rem; color: rgba(0, 45, 33, 0.9); font-weight: bold"
+  >
+    <strong>: </strong>Official distributor of top brands in bathroom fittings,
+    ensuring you get authentic and premium products every time.
+  </p>
+  <hr />
+
+  <!-- Product Categories -->
+  <div class="row g-4">
+    {% for brand in brands %}
+    <div class="col-lg-4 col-md-6 col-sm-12">
+      <a
+        href="{{ url_for('products_category', brand=brand) }}"
+        class="category-card-link text-decoration-none"
+      >
+        <div class="card category-card shadow-sm h-100 w-100">
+          <!-- Top part of the card with image -->
+          <div
+            class="card-img-top d-flex justify-content-center align-items-center bg-light rounded-top"
+            style="
+            height: 220px;
+            background: url('{{ url_for('static', filename='assets/img/' + brand + '.png') }}') no-repeat center center/cover;
+            width: 100%;
+            overflow: hidden;
+          "
+          >
+            <img
+              src="{{ url_for('static', filename='assets/img/' + brand + '.png') }}"
+              alt="{{ brand }}"
+              class="img-fluid"
+              style="max-height: 100%; object-fit: contain"
+            />
+          </div>
+
+          <!-- Card body -->
+          <div
+            class="card-body text-center text-white d-flex justify-content-center align-items-center"
+          >
+            <h5 class="card-title mb-0">{{ brand }}</h5>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
