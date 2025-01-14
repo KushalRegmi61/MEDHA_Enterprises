@@ -81,6 +81,12 @@ class AddProductForm(FlaskForm):
                             render_kw={"size": 30,
                                        "placeholder": "Enter image URL"}
                             )
+    # brand_name 
+    brand = StringField('Brand Name',
+                        validators=[DataRequired()],
+                        render_kw={
+                            "size": 30, "placeholder": "Enter product brand name"}
+                        )
 
     submit = SubmitField(label="Add Product", render_kw={"size": 30})
 
