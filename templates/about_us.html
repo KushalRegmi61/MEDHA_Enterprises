@@ -112,7 +112,10 @@
     <div class="row">
       <!-- Card for Brand A -->
       <div class="col-md-6 col-lg-4 py-lg-0 py-3">
-        <a href="" class="category-card-link text-decoration-none">
+        <a
+          href="{{ url_for('products_category', brand='topsan') }}"
+          class="category-card-link text-decoration-none"
+        >
           <div
             class="card category-card shadow-sm h-100"
             style="
@@ -132,7 +135,7 @@
               "
             >
               <img
-                src="{{ url_for('static', filename='assets/img/topsan1.png') }}"
+                src="{{ url_for('static', filename='assets/img/topsan.png') }}"
                 alt="Brand A Logo"
                 class="img-fluid"
                 style="width: 100%; height: 100%; object-fit: cover"
@@ -151,7 +154,10 @@
 
       <!-- Card for Brand B -->
       <div class="col-md-6 col-lg-4 py-lg-0 py-3">
-        <a href="#" class="category-card-link text-decoration-none">
+        <a
+          href="{{ url_for('products_category', brand='venus') }}"
+          class="category-card-link text-decoration-none"
+        >
           <div
             class="card category-card shadow-sm h-100"
             style="
@@ -189,7 +195,10 @@
 
       <!-- Card for Brand C -->
       <div class="col-md-6 col-lg-4 py-lg-0 py-3">
-        <a href="" class="category-card-link text-decoration-none">
+        <a
+          href="{{ url_for('products_category', brand='pushti') }}"
+          class="category-card-link text-decoration-none"
+        >
           <div
             class="card category-card shadow-sm h-100"
             style="transition: transform 0.3s ease, box-shadow 0.3s ease"
