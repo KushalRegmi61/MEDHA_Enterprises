@@ -104,6 +104,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
+    brand = db.Column(db.String(100), nullable=False)
     # Add wishList relationship
     wishList = db.relationship('Wishlist', back_populates='product')
     # Add product enquiry relationship
@@ -244,10 +245,11 @@ def add_product():
         # Save uploaded file
         file = form.image_url.data
         uploaded_image = file  # img url
+        brand = (form.brand.data).lower()
 
         # Create and add the new product to the database
         new_product = Product(name=name, category=category, price=price,
-                              description=description, image_url=uploaded_image)
+                              description=description, image_url=uploaded_image, brand=brand)
         db.session.add(new_product)
         db.session.commit()
 
@@ -255,12 +257,33 @@ def add_product():
         return redirect(url_for('home'))
     return render_template('addnewproduct.html', form=form)
 
+# Creating a route to view all products brand
+@app.route('/products_brand')
+def products_brand():
+    # Get all unique product brands
+    products_brand = db.session.query(Product.brand).distinct().all()
+    # Convert list of tuples to list of strings
+    products_brand = [product[0] for product in products_brand]
+
+    # brand_images = {}
+    # for brand in products_brand:
+    #     product = Product.query.filter_by(brand=brand).first()
+    #     # Add brand and image_url to dictionary
+    #     brand_images[brand] = product.image_url
+
+    return render_template('products_brand.html', brands = products_brand)
+
 # Creating a route to view all products category
-
-
-@app.route('/products_category')
-def products_category():
-    products_category = db.session.query(Product.category).distinct().all()
+@app.route('/products_category/<string:brand>')
+def products_category(brand):
+    
+    # getting hold of all the products category for a specific brand
+    # selecting all the unique categories for a specific brand
+    products_category = db.session.query(Product.category).filter_by(brand=brand).distinct().all()
+    
+    
+    # Get all unique product categories
+    # products_category = db.session.query(Product.category).distinct().all()
     # Convert list of tuples to list of strings
     products_category = [product[0] for product in products_category]
 
@@ -270,15 +293,21 @@ def products_category():
         # Add category and image_url to dictionary
         category_images[category] = product.image_url
 
-    return render_template('products_category.html', category_images=category_images)
+    return render_template('products_category.html', category_images=category_images, brand=brand.upper())
+
+
 
 # Creating a route to view all products in a category
-
-
 @app.route('/products')
 def products():
-    category = (request.args.get('category')).title()
+    category = (request.args.get('category')).title() # Get category from URL
+
+    # retrieving all the products in a specific category for a specific brand
+    # brand = request.args.get('brand')  # Get brand from URL , brand=brand
+    # Get all products in the category
     products = Product.query.filter_by(category=category).all()
+    
+    # render the products page
     return render_template('products.html', products=products, category=category)
 
 # Creating a route to view a single product
@@ -355,7 +384,8 @@ def modify_product(id):
         name=product.name,
         category=product.category,
         price=product.price,
-        description=product.description
+        description=product.description,
+        brand = product.brand
     )
     if form.validate_on_submit():
         product.name = form.name.data
@@ -364,6 +394,9 @@ def modify_product(id):
         product.description = form.description.data
         # Save uploaded file
         file_name = form.image_url.data
+        
+        # brand name
+        product.brand = form.brand.data
 
         # uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
         product.image_url = file_name
