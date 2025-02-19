@@ -1,7 +1,7 @@
-# **JAMUNA | SUPPLIERS**  
+# **MEDHA | ENTERPRISES**  
 ## *"Luxury for your bathroom, ease for your life!"*  
 
-Welcome to the **Jamuna Suppliers Online Shop**, your ultimate hub for premium bathroom fittings and home improvement essentials. As Nepal's trusted reseller of Topsan products, we focus on quality, style, and customer satisfaction.
+Welcome to the **MEDHA ENTERPRISES Online Shop**, your ultimate hub for premium bathroom fittings and home improvement essentials. As Nepal's trusted reseller of Topsan products, we focus on quality, style, and customer satisfaction.
 
 ---
 
@@ -16,7 +16,7 @@ Welcome to the **Jamuna Suppliers Online Shop**, your ultimate hub for premium b
 ## 🌐 **Live Project Demo**  
 
 Explore the live website:  
-[Jamuna Suppliers Online Shop](https://jamuna-suppliers-onlineshop.onrender.com/)  
+[MEDHA_Enterprises Online Shop](https://jamuna-suppliers-onlineshop.onrender.com/)  
 
 ---
 
@@ -57,7 +57,7 @@ Here’s how to set it up locally:
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/KushalRegmi61/Jamuna_Suppliers_OnlineShop.git
+   git clone git@github.com:KushalRegmi61/MEDHA_Enterprises.git
    cd Jamuna_Suppliers_OnlineShop
    ```  
 
