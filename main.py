@@ -89,7 +89,7 @@ class Users(UserMixin, db.Model):
         'DeliveryAddresses', back_populates='users')
     # Add products enquiry relationship
     product_enquiries = db.relationship(
-        'ProductEnquiry', back_populates='users')
+        'ProductEnquiries', back_populates='users')
 
 
 # Creating a products class
@@ -108,7 +108,7 @@ class Products(db.Model):
     wishLists = db.relationship('Wishlists', back_populates='products')
     # Add products enquiry relationship
     product_enquiries = db.relationship(
-        'ProductEnquiry', back_populates='products')
+        'ProductEnquiries', back_populates='products')
 
 
 # creating a wishLists class
