@@ -574,3 +574,22 @@ footer p {
   transform: translate(-50%, -50%) scale(1.05); /* Subtle zoom on hover */
 }
 
+/* FACEBOOK LOGO IN FOOTER STYLE */
+.facebook-icon {
+  background-color: #1877f2;
+  border-radius: 50%;
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.facebook-icon:hover {
+  background-color: #125ec1;
+  transform: scale(1.1);
+}
+
+.facebook-icon i {
+  color: white;
+}
