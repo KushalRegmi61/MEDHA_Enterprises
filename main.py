@@ -38,14 +38,14 @@ CKEditor(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# # Load user
+# # Load users
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return Users.query.get(user_id)
 
-# # Create a decorator to check if a user is an admin
+# # Create a decorator to check if a users is an admin
 
 
 def admin_required(f):
@@ -65,8 +65,7 @@ class Base(DeclarativeBase):
 # connect to the database
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    "DB_URL", "sqlite:///shop.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL", "sqlite:///shop.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # creating the database
@@ -74,30 +73,30 @@ db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
 
-# creating a user class
-class User(UserMixin, db.Model):
-    __tablename__ = 'user'
+# creating a users class
+class Users(UserMixin, db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    wishList = db.relationship(
-        'Wishlist', back_populates='user')  # Add wishList
+    wishLists = db.relationship(
+        'Wishlists', back_populates='users')  # Add wishLists
     # Add delivery address relationship
-    delivery_address = db.relationship(
-        'DeliveryAddress', back_populates='user')
-    # Add product enquiry relationship
-    product_enquiry = db.relationship(
-        'ProductEnquiry', back_populates='user')
+    delivery_addresses = db.relationship(
+        'DeliveryAddresses', back_populates='users')
+    # Add products enquiry relationship
+    product_enquiries = db.relationship(
+        'ProductEnquiry', back_populates='users')
 
 
-# Creating a product class
+# Creating a products class
 
 
-class Product(db.Model):
-    __tablename__ = 'product'
+class Products(db.Model):
+    __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(100), nullable=False)
@@ -105,51 +104,51 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
     brand = db.Column(db.String(100), nullable=False)
-    # Add wishList relationship
-    wishList = db.relationship('Wishlist', back_populates='product')
-    # Add product enquiry relationship
-    product_enquiry = db.relationship(
-        'ProductEnquiry', back_populates='product')
+    # Add wishLists relationship
+    wishLists = db.relationship('Wishlists', back_populates='products')
+    # Add products enquiry relationship
+    product_enquiries = db.relationship(
+        'ProductEnquiry', back_populates='products')
 
 
-# creating a wishList class
-class Wishlist(db.Model):
-    __tablename__ = 'wishList'
+# creating a wishLists class
+class Wishlists(db.Model):
+    __tablename__ = 'wishLists'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, ForeignKey(
-        'product.id'), nullable=False)
+        'products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    # Add user relationship
-    user = db.relationship('User', back_populates='wishList')
-    # Add product relationship
-    product = db.relationship('Product', back_populates='wishList')
+    # Add users relationship
+    users = db.relationship('Users', back_populates='wishLists')
+    # Add products relationship
+    products = db.relationship('Products', back_populates='wishLists')
 
-# creating a product_enquiry class
+# creating a product_enquiries class
 
 
-class ProductEnquiry(db.Model):
-    __tablename__ = 'product_enquiry'
+class ProductEnquiries(db.Model):
+    __tablename__ = 'product_enquiries'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, ForeignKey(
-        'product.id'), nullable=False)
-    # Add user relationship
-    user = db.relationship('User', back_populates='product_enquiry')
-    product = db.relationship(
-        'Product', back_populates='product_enquiry')  # Add product
+        'products.id'), nullable=False)
+    # Add users relationship
+    users = db.relationship('Users', back_populates='product_enquiries')
+    products = db.relationship(
+        'Products', back_populates='product_enquiries')  # Add products
 
 # creating a delivery address class
 
 
-class DeliveryAddress(db.Model):
-    __tablename__ = 'delivery_address'
+class DeliveryAddresses(db.Model):
+    __tablename__ = 'delivery_addresses'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    # Add user relationship
-    user = db.relationship('User', back_populates='delivery_address')
+    # Add users relationship
+    users = db.relationship('Users', back_populates='delivery_addresses')
 
 
 # Initializing the database
@@ -163,7 +162,7 @@ def home():
     return render_template('homepage.html')
 
 
-# creating a route for user registration
+# creating a route for users registration
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -173,7 +172,7 @@ def register():
         address = form.address.data
         phone_number = form.phone_number.data
 
-        new_user = User(
+        new_user = Users(
             email=email,
             password=generate_password_hash(
                 form.password.data, method='pbkdf2:sha256', salt_length=8),
@@ -181,13 +180,13 @@ def register():
             address=address,
             phone_number=phone_number
         )
-        # check if the user already exists
-        user = db.session.query(User).filter_by(email=email).first()
-        if user:
-            flash("User already exists! Try login", "danger")
+        # check if the users already exists
+        users = db.session.query(Users).filter_by(email=email).first()
+        if users:
+            flash("Users already exists! Try login", "danger")
             return redirect(url_for('login'))
 
-        # add the user to the database
+        # add the users to the database
         try:
             db.session.add(new_user)
             db.session.commit()
@@ -195,24 +194,24 @@ def register():
             return redirect(url_for('login'))
         except Exception as e:
 
-            flash(f"Error occurred While Registering New User:{e}", "danger")
+            flash(f"Error occurred While Registering New Users:{e}", "danger")
             db.session.rollback()
             return redirect(url_for('register'))
 
     return render_template('register.html', form=form)
 
 
-# creating a route for user login
+# creating a route for users login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        user = User.query.filter_by(email=email).first()
-        if user:
-            if check_password_hash(user.password, password):
-                login_user(user)
+        users = Users.query.filter_by(email=email).first()
+        if users:
+            if check_password_hash(users.password, password):
+                login_user(users)
                 flash(f"{current_user.name} Logged in successfully.", 'success')
                 return redirect(url_for('home'))
             else:
@@ -223,14 +222,14 @@ def login():
     return render_template('login.html', form=form)
 
 
-# creating a route for user logout
+# creating a route for users logout
 @app.route('/logout')
 def logout():
     logout_user()
     flash("You have been logged out.", 'success')
     return redirect(url_for('home'))
 
-# creating a route for adding a new product
+# creating a route for adding a new products
 
 
 @app.route('/add_product', methods=['GET', 'POST'])
@@ -247,29 +246,29 @@ def add_product():
         uploaded_image = file  # img url
         brand = (form.brand.data).lower()
 
-        # Create and add the new product to the database
-        new_product = Product(name=name, category=category, price=price,
+        # Create and add the new products to the database
+        new_product = Products(name=name, category=category, price=price,
                               description=description, image_url=uploaded_image, brand=brand)
         db.session.add(new_product)
         db.session.commit()
 
-        flash("Product added successfully.", 'success')
+        flash("Products added successfully.", 'success')
         return redirect(url_for('home'))
     return render_template('addnewproduct.html', form=form)
 
 # Creating a route to view all products brand
 @app.route('/products_brand')
 def products_brand():
-    # Get all unique product brands
-    products_brand = db.session.query(Product.brand).distinct().all()
+    # Get all unique products brands
+    products_brand = db.session.query(Products.brand).distinct().all()
     # Convert list of tuples to list of strings
-    products_brand = [product[0] for product in products_brand]
+    products_brand = [products[0] for products in products_brand]
 
     # brand_images = {}
     # for brand in products_brand:
-    #     product = Product.query.filter_by(brand=brand).first()
+    #     products = Products.query.filter_by(brand=brand).first()
     #     # Add brand and image_url to dictionary
-    #     brand_images[brand] = product.image_url
+    #     brand_images[brand] = products.image_url
 
     return render_template('products_brand.html', brands = products_brand)
 
@@ -279,19 +278,19 @@ def products_category(brand):
     
     # getting hold of all the products category for a specific brand
     # selecting all the unique categories for a specific brand
-    products_category = db.session.query(Product.category).filter_by(brand=brand).distinct().all()
+    products_category = db.session.query(Products.category).filter_by(brand=brand).distinct().all()
     
     
-    # Get all unique product categories
-    # products_category = db.session.query(Product.category).distinct().all()
+    # Get all unique products categories
+    # products_category = db.session.query(Products.category).distinct().all()
     # Convert list of tuples to list of strings
-    products_category = [product[0] for product in products_category]
+    products_category = [products[0] for products in products_category]
 
     category_images = {}
     for category in products_category:
-        product = Product.query.filter_by(category=category).first()
+        products = Products.query.filter_by(category=category).first()
         # Add category and image_url to dictionary
-        category_images[category] = product.image_url
+        category_images[category] = products.image_url
 
     return render_template('products_category.html', category_images=category_images, brand=brand.upper())
 
@@ -305,128 +304,128 @@ def products():
     # retrieving all the products in a specific category for a specific brand
     # brand = request.args.get('brand')  # Get brand from URL , brand=brand
     # Get all products in the category
-    products = Product.query.filter_by(category=category).all()
+    products = Products.query.filter_by(category=category).all()
     
     # render the products page
     return render_template('products.html', products=products, category=category)
 
-# Creating a route to view a single product
+# Creating a route to view a single products
 
 
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):
-    # Retrieve the product by ID
-    product = Product.query.get_or_404(id)
-    #  render the product details page
-    return render_template('product_details.html', product=product)
+    # Retrieve the products by ID
+    products = Products.query.get_or_404(id)
+    #  render the products details page
+    return render_template('product_details.html', products=products)
 
-# creating a route to add product to wishList
+# creating a route to add products to wishLists
 
 
 @app.route('/add_to_wishlist/<int:id>')
 def add_to_wishlist(id):
     is_enquire = request.args.get('is_enquire')
 
-    # Ensure the user is authenticated
+    # Ensure the users is authenticated
     if not current_user.is_authenticated:
         flash("You need to log in first to add items to the wishlist.", "danger")
         return redirect(url_for('login'))
 
-    # Check if the user already has the product in their wishList
-    cart_item = Wishlist.query.filter_by(
+    # Check if the users already has the products in their wishLists
+    cart_item = Wishlists.query.filter_by(
         user_id=current_user.id, product_id=id).first()
     if cart_item:
-        # Update the quantity of the existing wishList item
+        # Update the quantity of the existing wishLists item
         cart_item.quantity += 1
         db.session.commit()
-        flash(f"Added '{cart_item.product.name}' to your wishlist.", "success")
+        flash(f"Added '{cart_item.products.name}' to your wishlist.", "success")
 
     else:
-        # Add a new wishList item for the user
-        new_cart_item = Wishlist(
+        # Add a new wishLists item for the users
+        new_cart_item = Wishlists(
             user_id=current_user.id, product_id=id, quantity=1)
         db.session.add(new_cart_item)
         db.session.commit()
-        flash(f"Added '{new_cart_item.product.name}' to your wishlist successfully.", "success")
+        flash(f"Added '{new_cart_item.products.name}' to your wishlist successfully.", "success")
 
     if is_enquire:
-        return redirect(url_for('wishList'))
+        return redirect(url_for('wishLists'))
     # rediricting the url to the wishlist page
     return redirect(url_for('product_details', id=id))
 
-# creating a route to delete a product
+# creating a route to delete a products
 
 
-@app.route('/delete-product/<int:id>')
+@app.route('/delete-products/<int:id>')
 @login_required
 @admin_required
 def delete_product(id):
-    product = Product.query.get_or_404(id)
+    products = Products.query.get_or_404(id)
     try:
-        db.session.delete(product)
+        db.session.delete(products)
         db.session.commit()
-        flash(f"Product '{product.name}' deleted successfully.", "success")
+        flash(f"Products '{products.name}' deleted successfully.", "success")
 
     except Exception as e:
-        flash(f"An error occurred while deleting the product:{product.name}", "danger")
+        flash(f"An error occurred while deleting the products:{products.name}", "danger")
         db.session.rollback()
     return redirect(url_for('products_category'))
 
 
-# Creating a route to modify a product
+# Creating a route to modify a products
 
-@app.route('/modify-product/<int:id>', methods=['GET', 'POST'])
+@app.route('/modify-products/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def modify_product(id):
-    product = Product.query.get_or_404(id)
+    products = Products.query.get_or_404(id)
     form = UpdateProductForm(
-        name=product.name,
-        category=product.category,
-        price=product.price,
-        description=product.description,
-        brand = product.brand
+        name=products.name,
+        category=products.category,
+        price=products.price,
+        description=products.description,
+        brand = products.brand
     )
     if form.validate_on_submit():
-        product.name = form.name.data
-        product.category = form.category.data
-        product.price = form.price.data
-        product.description = form.description.data
+        products.name = form.name.data
+        products.category = form.category.data
+        products.price = form.price.data
+        products.description = form.description.data
         # Save uploaded file
         file_name = form.image_url.data
         
         # brand name
-        product.brand = form.brand.data
+        products.brand = form.brand.data
 
         # uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
-        product.image_url = file_name
+        products.image_url = file_name
         try:
             db.session.commit()
-            flash(f"Product '{product.name}' updated successfully.", "success")
+            flash(f"Products '{products.name}' updated successfully.", "success")
 
-            # Redirect to the same product details page to prevent resubmission
+            # Redirect to the same products details page to prevent resubmission
             return redirect(url_for('product_details', id=id))
 
         except Exception as e:
-            flash(f"An error occurred while updating the product: {product.name}", "danger")
+            flash(f"An error occurred while updating the products: {products.name}", "danger")
             db.session.rollback()
 
-    # Render the modify product page
-    return render_template('modify_product.html', form=form, product=product)
+    # Render the modify products page
+    return render_template('modify_product.html', form=form, products=products)
 
 
-# Creating a route to view all products in the wishList: wishlist
+# Creating a route to view all products in the wishLists: wishlist
 @app.route('/wishlist', methods=['GET'])
-def wishList():
-    # Logic for displaying the wishList if authenticated
+def wishLists():
+    # Logic for displaying the wishLists if authenticated
     if not current_user.is_authenticated:
         flash("You need to login first", "danger")
         return redirect(url_for('login'))
 
-    # getting all the products in the wishList by user_id
-    cart_items = Wishlist.query.filter_by(user_id=current_user.id).all()
+    # getting all the products in the wishLists by user_id
+    cart_items = Wishlists.query.filter_by(user_id=current_user.id).all()
 
-    # return the wishList page
+    # return the wishLists page
     return render_template('wishlist.html', cart_items=cart_items)
 
 
@@ -438,13 +437,13 @@ def update_cart_item(id):
         return redirect(url_for('login'))
 
     try:
-        # Retrieve the wishList item by ID and ensure it belongs to the current user
-        cart_item = Wishlist.query.filter_by(
+        # Retrieve the wishLists item by ID and ensure it belongs to the current users
+        cart_item = Wishlists.query.filter_by(
             id=id, user_id=current_user.id).first()
 
         if not cart_item:
-            flash("Wishlist item not found.", "danger")
-            return redirect(url_for('wishList'))
+            flash("Wishlists item not found.", "danger")
+            return redirect(url_for('wishLists'))
 
         # Get the new quantity from the form
         new_quantity = int(request.form.get('quantity', 1)
@@ -453,19 +452,19 @@ def update_cart_item(id):
         if new_quantity < 1:
             flash("Quantity must be at least 1.", "warning")
         else:
-            # Update the wishList item quantity
+            # Update the wishLists item quantity
             cart_item.quantity = new_quantity
             db.session.commit()
-            flash(f"Updated quantity for {cart_item.product.name} to {new_quantity}.", "success")
+            flash(f"Updated quantity for {cart_item.products.name} to {new_quantity}.", "success")
 
     except ValueError:
         flash("Invalid quantity. Please enter a valid number.", "danger")
     except Exception as e:
         db.session.rollback()
-        flash("An error occurred while updating the wishList.", "danger")
+        flash("An error occurred while updating the wishLists.", "danger")
 
-    # Redirect back to the wishList page
-    return redirect(url_for('wishList'))
+    # Redirect back to the wishLists page
+    return redirect(url_for('wishLists'))
 
 
 # Allow POST for better practice
@@ -473,22 +472,22 @@ def update_cart_item(id):
 def delete_cart_item(id):
     try:
         # Attempt to find the item
-        cart_item = Wishlist.query.filter_by(id=id).first()
+        cart_item = Wishlists.query.filter_by(id=id).first()
         if not cart_item:
-            flash("Item not found in the wishList.", "warning")
-            return redirect(url_for('wishList'))
+            flash("Item not found in the wishLists.", "warning")
+            return redirect(url_for('wishLists'))
 
         # Delete the item
         db.session.delete(cart_item)
         db.session.commit()
-        flash("Item removed from wishList successfully.", "success")
+        flash("Item removed from wishLists successfully.", "success")
 
     except Exception as e:
-        app.logger.error(f"Error deleting wishList item: {e}")
+        app.logger.error(f"Error deleting wishLists item: {e}")
         db.session.rollback()
-        flash("An error occurred while removing the item from the wishList.", "danger")
+        flash("An error occurred while removing the item from the wishLists.", "danger")
 
-    return redirect(url_for('wishList'))
+    return redirect(url_for('wishLists'))
 
 
 # Creating a route to contact us
@@ -506,7 +505,7 @@ def contact_us():
         try:
             with SMTP("smtp.gmail.com") as connection:
                 connection.starttls()  # Secure the connection
-                connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+                connection.login(users=MY_EMAIL, password=MY_PASSWORD)
                 connection.sendmail(
                     from_addr=MY_EMAIL,
                     to_addrs='kushalbro82@gmail.com',
@@ -534,9 +533,9 @@ def about():
 
 @app.route('/enquiry', methods=['GET', 'POST'])
 def enquiry():
-    product_id = request.args.get('product_id')  # Get product ID from URL
+    product_id = request.args.get('product_id')  # Get products ID from URL
 
-    product = Product.query.get(product_id)  # Get product by ID
+    products = Products.query.get(product_id)  # Get products by ID
 
     form = ProductEnquiryForm()
     if form.validate_on_submit():
@@ -545,12 +544,12 @@ def enquiry():
         phone_number = form.phone_number.data
         message = form.message.data
 
-        msg = f"Subject:Product Enquiry\n\nName: {name}\nEmail: {email}\nPhone Number: {phone_number}\nProduct Name: {product.name}\nMessage: {message}"
+        msg = f"Subject:Products Enquiry\n\nName: {name}\nEmail: {email}\nPhone Number: {phone_number}\nProduct Name: {products.name}\nMessage: {message}"
         # Send email
         try:
             with SMTP("smtp.gmail.com") as connection:
                 connection.starttls()  # Secure the connection
-                connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+                connection.login(users=MY_EMAIL, password=MY_PASSWORD)
                 connection.sendmail(
                     from_addr=MY_EMAIL,
                     to_addrs='kushalbro82@gmail.com',
@@ -563,7 +562,7 @@ def enquiry():
             app.logger.error(f"Error sending enquiry email: {e}")
             flash("An error occurred while sending the enquiry.", "danger")
 
-    return render_template('enquiry.html', form=form, product=product)
+    return render_template('enquiry.html', form=form, products=products)
 
 
 # running the app
