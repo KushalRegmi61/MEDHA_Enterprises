@@ -41,11 +41,12 @@
     {% if category_images|length == 0 %}
     <div class="col-12 text-center pb-5">
       <h3 class="body-text py-3 text-center">
-        No products found for this brand. Please check back later!
+        This brand is available in our offline store. Online availability coming
+        soon!
       </h3>
       <!-- adding button for viewing other category -->
       <a href="{{ url_for('products_brand') }}" class="btn btn-primary"
-        >View Other Categories</a
+        >View Other Brands</a
       >
     </div>
     {% endif %} {% for category, image_url in category_images.items() %}
