@@ -73,7 +73,7 @@ db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
 
-# creating a users class
+# creating a users class# Define the Users model
 class Users(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -82,74 +82,60 @@ class Users(UserMixin, db.Model):
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    wishLists = db.relationship(
-        'Wishlists', back_populates='users')  # Add wishLists
-    # Add delivery address relationship
-    delivery_addresses = db.relationship(
-        'DeliveryAddresses', back_populates='users')
-    # Add products enquiry relationship
-    product_enquiries = db.relationship(
-        'ProductEnquiries', back_populates='users')
+    
+    # Relationships
+    wishlists = db.relationship('Wishlists', back_populates='users')  # Corrected to 'Wishlists'
+    delivery_addresses = db.relationship('DeliveryAddresses', back_populates='users')
+    product_enquiries = db.relationship('ProductEnquiries', back_populates='users')
 
-
-# Creating a products class
-
-
+# Define the Products model
 class Products(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    image_url = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)  # Changed from String(100) to Text
+    image_url = db.Column(db.String(255), nullable=False)  # Increased from String(100) to String(255)
     brand = db.Column(db.String(100), nullable=False)
-    # Add wishLists relationship
-    wishLists = db.relationship('Wishlists', back_populates='products')
-    # Add products enquiry relationship
-    product_enquiries = db.relationship(
-        'ProductEnquiries', back_populates='products')
+    
+    # Relationships
+    wishlists = db.relationship('Wishlists', back_populates='products')  # Corrected to 'Wishlists'
+    product_enquiries = db.relationship('ProductEnquiries', back_populates='products')
 
-
-# creating a wishLists class
+# Define the Wishlists model
 class Wishlists(db.Model):
-    __tablename__ = 'wishLists'
+    __tablename__ = 'wishlists'  # Table name is now lowercase 'wishlists'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, ForeignKey(
-        'products.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    # Add users relationship
-    users = db.relationship('Users', back_populates='wishLists')
-    # Add products relationship
-    products = db.relationship('Products', back_populates='wishLists')
+    
+    # Relationships
+    users = db.relationship('Users', back_populates='wishlists')
+    products = db.relationship('Products', back_populates='wishlists')
 
-# creating a product_enquiries class
-
-
+# Define the ProductEnquiries model
 class ProductEnquiries(db.Model):
     __tablename__ = 'product_enquiries'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, ForeignKey(
-        'products.id'), nullable=False)
-    # Add users relationship
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    
+    # Relationships
     users = db.relationship('Users', back_populates='product_enquiries')
-    products = db.relationship(
-        'Products', back_populates='product_enquiries')  # Add products
+    products = db.relationship('Products', back_populates='product_enquiries')
 
-# creating a delivery address class
-
-
+# Define the DeliveryAddresses model
 class DeliveryAddresses(db.Model):
     __tablename__ = 'delivery_addresses'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
-    # Add users relationship
+    
+    # Relationships
     users = db.relationship('Users', back_populates='delivery_addresses')
-
 
 # Initializing the database
 with app.app_context():
@@ -315,9 +301,9 @@ def products():
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):
     # Retrieve the products by ID
-    products = Products.query.get_or_404(id)
+    product = Products.query.get_or_404(id)
     #  render the products details page
-    return render_template('product_details.html', products=products)
+    return render_template('product_details.html', product=product)
 
 # creating a route to add products to wishLists
 
@@ -360,14 +346,14 @@ def add_to_wishlist(id):
 @login_required
 @admin_required
 def delete_product(id):
-    products = Products.query.get_or_404(id)
+    product = Products.query.get_or_404(id)
     try:
-        db.session.delete(products)
+        db.session.delete(product)
         db.session.commit()
-        flash(f"Products '{products.name}' deleted successfully.", "success")
+        flash(f"Products '{product.name}' deleted successfully.", "success")
 
     except Exception as e:
-        flash(f"An error occurred while deleting the products:{products.name}", "danger")
+        flash(f"An error occurred while deleting the product:{product.name}", "danger")
         db.session.rollback()
     return redirect(url_for('products_category'))
 
@@ -378,40 +364,40 @@ def delete_product(id):
 @login_required
 @admin_required
 def modify_product(id):
-    products = Products.query.get_or_404(id)
+    product = Products.query.get_or_404(id)
     form = UpdateProductForm(
-        name=products.name,
-        category=products.category,
-        price=products.price,
-        description=products.description,
-        brand = products.brand
+        name=product.name,
+        category=product.category,
+        price=product.price,
+        description=product.description,
+        brand = product.brand
     )
     if form.validate_on_submit():
-        products.name = form.name.data
-        products.category = form.category.data
-        products.price = form.price.data
-        products.description = form.description.data
+        product.name = form.name.data
+        product.category = form.category.data
+        product.price = form.price.data
+        product.description = form.description.data
         # Save uploaded file
         file_name = form.image_url.data
         
         # brand name
-        products.brand = form.brand.data
+        product.brand = form.brand.data
 
         # uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
-        products.image_url = file_name
+        product.image_url = file_name
         try:
             db.session.commit()
-            flash(f"Products '{products.name}' updated successfully.", "success")
+            flash(f"Products '{product.name}' updated successfully.", "success")
 
-            # Redirect to the same products details page to prevent resubmission
+            # Redirect to the same product details page to prevent resubmission
             return redirect(url_for('product_details', id=id))
 
         except Exception as e:
-            flash(f"An error occurred while updating the products: {products.name}", "danger")
+            flash(f"An error occurred while updating the product: {product.name}", "danger")
             db.session.rollback()
 
-    # Render the modify products page
-    return render_template('modify_product.html', form=form, products=products)
+    # Render the modify product page
+    return render_template('modify_product.html', form=form, product=product)
 
 
 # Creating a route to view all products in the wishLists: wishlist
@@ -442,7 +428,7 @@ def update_cart_item(id):
             id=id, user_id=current_user.id).first()
 
         if not cart_item:
-            flash("Wishlists item not found.", "danger")
+            flash("wishLists item not found.", "danger")
             return redirect(url_for('wishLists'))
 
         # Get the new quantity from the form
@@ -455,7 +441,7 @@ def update_cart_item(id):
             # Update the wishLists item quantity
             cart_item.quantity = new_quantity
             db.session.commit()
-            flash(f"Updated quantity for {cart_item.products.name} to {new_quantity}.", "success")
+            flash(f"Updated quantity for {cart_item.product.name} to {new_quantity}.", "success")
 
     except ValueError:
         flash("Invalid quantity. Please enter a valid number.", "danger")
@@ -535,7 +521,7 @@ def about():
 def enquiry():
     product_id = request.args.get('product_id')  # Get products ID from URL
 
-    products = Products.query.get(product_id)  # Get products by ID
+    product = Products.query.get(product_id)  # Get product by ID
 
     form = ProductEnquiryForm()
     if form.validate_on_submit():
@@ -544,7 +530,7 @@ def enquiry():
         phone_number = form.phone_number.data
         message = form.message.data
 
-        msg = f"Subject:Products Enquiry\n\nName: {name}\nEmail: {email}\nPhone Number: {phone_number}\nProduct Name: {products.name}\nMessage: {message}"
+        msg = f"Subject:Products Enquiry\n\nName: {name}\nEmail: {email}\nPhone Number: {phone_number}\nProduct Name: {product.name}\nMessage: {message}"
         # Send email
         try:
             with SMTP("smtp.gmail.com") as connection:
@@ -562,7 +548,7 @@ def enquiry():
             app.logger.error(f"Error sending enquiry email: {e}")
             flash("An error occurred while sending the enquiry.", "danger")
 
-    return render_template('enquiry.html', form=form, products=products)
+    return render_template('enquiry.html', form=form, product=product)
 
 
 # running the app
