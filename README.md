@@ -16,7 +16,7 @@ Welcome to the **MEDHA ENTERPRISES Online Shop**, your ultimate hub for premium 
 ## 🌐 **Live Project Demo**  
 
 Explore the live website:  
-[MEDHA_Enterprises Online Shop](https://jamuna-suppliers-onlineshop.onrender.com/)  
+[MEDHA_Enterprises Online Shop](https://medha-enterprises.onrender.com/)  
 
 ---
 
